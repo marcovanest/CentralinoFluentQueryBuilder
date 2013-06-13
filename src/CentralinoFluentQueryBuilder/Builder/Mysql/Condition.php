@@ -13,4 +13,14 @@ class Condition
   {
     $this->parameters = $parameters;
   }
+
+  public function range($parameters)
+  {
+    $this->parameters = $parameters;
+  }
+
+  public function contains($parameters)
+  {
+    $this->parameters = $parameters;
+  }
 }

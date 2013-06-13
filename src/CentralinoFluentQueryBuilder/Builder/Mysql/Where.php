@@ -21,14 +21,28 @@ class Where extends Builder
     $condition = new Condition();
     $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
 
-    if($this->nested)
-    {
-      self::$_build[$this->_type][$this->where_position][] = $condition;   
-    }
-    else
-    {
-      self::$_build[$this->_type][] = $condition;   
-    }
+    parent::addCondition($condition);
+  }
+
+  public function between($column, $firstvalue, $secondvalue)
+  {
+    $condition = new Condition();
+    $condition->range(compact('column', 'firstvalue', 'secondvalue'));
+
+    parent::addCondition($condition);
+  }
+
+  public function in($column, $values)
+  {
+    $condition = new Condition();
+    $condition->range(compact('column', 'values'));
+
+    parent::addCondition($condition);
+  }
+
+  public function exists()
+  {
+
   }
 
 }

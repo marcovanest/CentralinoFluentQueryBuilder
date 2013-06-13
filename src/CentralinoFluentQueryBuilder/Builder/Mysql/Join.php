@@ -21,14 +21,7 @@ class Join extends Builder
     $condition = new Condition();
     $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
 
-    if($this->nested)
-    {
-      self::$_build[$this->_type][$this->table][$this->on_position][] = $condition;   
-    }
-    else
-    {
-      self::$_build[$this->_type][$this->table][] = $condition;   
-    }
+    parent::addCondition($condition);
      
   }
 
