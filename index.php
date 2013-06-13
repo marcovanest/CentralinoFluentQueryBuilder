@@ -2,7 +2,7 @@
 
 include 'src/Bootstrap.php';
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname={NAME}', '{USER}', '{PASSWORD}');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
