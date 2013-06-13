@@ -1,6 +1,6 @@
-<?php namespace Centralino\Core\DatabaseManager\Statement\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-use Centralino\Core\DatabaseManager\Statement\Builder\General;
+use CentralinoFluentQueryBuilder\Builder\General;
 
 class Builder extends General
 {

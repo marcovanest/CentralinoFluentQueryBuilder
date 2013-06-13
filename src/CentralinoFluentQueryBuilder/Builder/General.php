@@ -1,6 +1,6 @@
-<?php namespace Centralino\Core\DatabaseManager\Statement\Builder;
+<?php namespace CentralinoFluentQueryBuilder\Builder;
 
-use Centralino\Core\DatabaseManager\Connection;
+use CentralinoFluentQueryBuilder\Connection;
 
 class General
 {

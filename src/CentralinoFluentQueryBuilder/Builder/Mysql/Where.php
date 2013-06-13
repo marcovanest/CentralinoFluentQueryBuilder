@@ -1,4 +1,4 @@
-<?php namespace Centralino\Core\DatabaseManager\Statement\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
 class Where extends Builder
 {
