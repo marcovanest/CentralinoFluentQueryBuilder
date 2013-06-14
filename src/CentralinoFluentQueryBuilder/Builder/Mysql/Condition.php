@@ -2,7 +2,7 @@
 
 class Condition
 {
-  public $parameters = array();
+  public $arguments = array();
 
   public $type;
 
@@ -11,18 +11,18 @@ class Condition
     $this->type = $type;
   } 
 
-  public  function compare($parameters)
+  public  function compare($table, $arguments)
   {
-    $this->parameters = $parameters;
+    $this->arguments = $arguments;
   }
 
-  public function range($parameters)
+  public function range($table, $arguments)
   {
-    $this->parameters = $parameters;
+    $this->arguments = $arguments;
   }
 
-  public function contains($parameters)
+  public function contains($table, $arguments)
   {
-    $this->parameters = $parameters;
+    $this->arguments = $arguments;
   }
 }

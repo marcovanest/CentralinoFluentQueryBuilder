@@ -20,22 +20,12 @@ class Where extends Builder
   }
 
   public function compare()
-  {
-    $arguments    = func_get_args();
-    $numargument  = func_num_args();
-
-    echo '<pre>';
-    print_r($arguments);
-
-
-    $firstcolumn  = $numargument >= 3 ? $arguments[0] : $this->table;
-    $operator     = $numargument >= 3 ? $arguments[1] : $arguments[0];
-    $secondcolumn = $numargument >= 3 ? $arguments[2] : $arguments[1];
-
-    $type         = $numargument >= 3 ? $arguments[3] : $arguments[2];
+  {  
+    $table      = $this->table;
+    $arguments  = func_get_args();
 
     $condition = new Condition('compare');
-    $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
+    $condition->compare($table, $arguments);
 
     parent::addCondition($condition);
 
@@ -44,15 +34,11 @@ class Where extends Builder
 
   public function between()
   {
-    $arguments    = func_get_args();
-    $numargument  = func_num_args();
-
-    $column       = $numargument > 2 ? $arguments[0] : $this->table;
-    $firstvalue   = $numargument > 2 ? $arguments[1] : $arguments[0];
-    $secondvalue  = $numargument > 2 ? $arguments[2] : $arguments[1];
+    $table      = $this->table;
+    $arguments  = func_get_args();
 
     $condition = new Condition('between');
-    $condition->range(compact('column', 'firstvalue', 'secondvalue'));
+    $condition->range($table, $arguments);
 
     parent::addCondition($condition);
 
@@ -61,14 +47,11 @@ class Where extends Builder
 
   public function in()
   {
-    $arguments   = func_get_args();
-    $numargument = func_num_args();
-
-    $column = $numargument > 1 ? $arguments[0] : $this->table;
-    $values = $numargument > 1 ? $arguments[1] : $arguments[0];
+    $table      = $this->table;
+    $arguments  = func_get_args();
 
     $condition = new Condition('in');
-    $condition->contains(compact('column', 'values'));
+    $condition->contains($table, $arguments);
 
     parent::addCondition($condition);
 

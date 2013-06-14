@@ -80,6 +80,14 @@ class Builder extends General
     }
   }
 
+  protected function extractArguments()
+  {
+    $arguments    = func_get_args();
+    $numargument  = func_num_args();
+
+    echo $numargument;
+  }
+
   public function limit($offset, $amountofrows)
   {
     self::$_build['limit'] = compact('offset', 'amountofrows');
