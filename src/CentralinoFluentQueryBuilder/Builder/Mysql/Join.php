@@ -13,19 +13,21 @@ class Join extends Builder
     $this->table = $table;   
     $this->_type = 'join';   
 
-    parent::$_build[$this->_type][$this->table] = array();
+    if(!isset(parent::$_build[$this->_type]))
+    {
+      parent::$_build[$this->_type] = array();
+    }
   }
 
   public function on($firstcolumn, $operator = null, $secondcolumn = null, $type = 'AND')
   {
     $table      = $this->table;
     $arguments  = func_get_args();
-    
+
     $condition = new Condition('compare');
     $condition->compare($table, $arguments);
 
     parent::addCondition($condition);
      
   }
-
 }

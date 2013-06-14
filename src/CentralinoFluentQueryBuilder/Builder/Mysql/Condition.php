@@ -6,6 +6,8 @@ class Condition
 
   public $type;
 
+  public $table;
+
   public function __construct($type)
   {
     $this->type = $type;
@@ -13,16 +15,19 @@ class Condition
 
   public  function compare($table, $arguments)
   {
+    $this->table = $table;
     $this->arguments = $arguments;
   }
 
   public function range($table, $arguments)
   {
+    $this->table = $table;
     $this->arguments = $arguments;
   }
 
   public function contains($table, $arguments)
   {
+    $this->table = $table;
     $this->arguments = $arguments;
   }
 }

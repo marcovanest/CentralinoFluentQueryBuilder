@@ -36,14 +36,7 @@ class Builder extends General
 
     if(is_callable($function))
     {
-      if($this instanceof Join)
-      {
-        $this->on_position = count(self::$_build[$this->_type][$this->table]);
-      }
-      if($this instanceof Where)
-      {
-        $this->where_position = count(self::$_build[$this->_type]);
-      }
+      $this->conditionposition = count(self::$_build[$this->_type]);
 
       call_user_func($function, $this);
     }
@@ -55,39 +48,16 @@ class Builder extends General
 
   protected function addCondition($condition)
   {
-    if($this instanceof Join)
+    if($this->nested)
     {
-      if($this->nested)
-      {
-        self::$_build[$this->_type][$this->table][$this->on_position][] = $condition;
-      }
-      else
-      {
-        self::$_build[$this->_type][$this->table][] = $condition;   
-      }
-          
+      self::$_build[$this->_type][$this->conditionposition][] = $condition;
     }
-    if($this instanceof Where)
+    else
     {
-      if($this->nested)
-      {
-        self::$_build[$this->_type][$this->where_position][] = $condition; 
-      }
-      else
-      {
-        self::$_build[$this->_type][] = $condition;
-      }  
-    }
+      self::$_build[$this->_type][] = $condition;   
+    }     
   }
-
-  protected function extractArguments()
-  {
-    $arguments    = func_get_args();
-    $numargument  = func_num_args();
-
-    echo $numargument;
-  }
-
+  
   public function limit($offset, $amountofrows)
   {
     self::$_build['limit'] = compact('offset', 'amountofrows');

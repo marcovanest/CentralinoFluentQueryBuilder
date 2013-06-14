@@ -2,7 +2,7 @@
 
 include 'src/Bootstrap.php';
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USERNAME}', '{PASSWORD}');
 
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
@@ -28,6 +28,7 @@ $builder->where()->nested(function($builder){
 
 $builder->where('user_id')->in(array(1,4));
 $builder->where('user_id')->between(7, 8);
+$builder->where('user_id')->compare('=', 'wp_users.ID');
 
 $builder->limit(0, 5);
 $builder->order('user_id', 'ASC');
