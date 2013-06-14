@@ -38,11 +38,11 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        $this->on_position = count(static::$_build[$this->_type][$this->table]);
+        $this->on_position = count(self::$_build[$this->_type][$this->table]);
       }
       if($this instanceof Where)
       {
-        $this->where_position = count(static::$_build[$this->_type]);
+        $this->where_position = count(self::$_build[$this->_type]);
       }
 
       call_user_func($function, $this);
@@ -82,21 +82,21 @@ class Builder extends General
 
   public function limit($offset, $amountofrows)
   {
-    static::$_build['limit'] = compact('offset', 'amountofrows');
+    self::$_build['limit'] = compact('offset', 'amountofrows');
 
     return $this;
   }
 
   public function order($column, $direction)
   {
-    static::$_build['order'][] = compact('column', 'direction');
+    self::$_build['order'][] = compact('column', 'direction');
 
     return $this;
   }
 
   public function group($column)
   {
-    static::$_build['group'][] = compact('column');
+    self::$_build['group'][] = compact('column');
 
     return $this;
   }

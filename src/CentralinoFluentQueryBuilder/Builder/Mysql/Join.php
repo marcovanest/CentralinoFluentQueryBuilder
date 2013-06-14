@@ -13,7 +13,7 @@ class Join extends Builder
     $this->table = $table;   
     $this->_type = 'join';   
 
-    self::$_build[$this->_type][$this->table] = array();
+    parent::$_build[$this->_type][$this->table] = array();
   }
 
   public function on($firstcolumn, $operator = null, $secondcolumn = null, $type = 'AND')

@@ -10,9 +10,9 @@ class Where extends Builder
   { 
     $this->_type = 'where';  
 
-    if(!isset(self::$_build[$this->_type]))
+    if(!isset(parent::$_build[$this->_type]))
     {
-      self::$_build[$this->_type] = array();
+      parent::$_build[$this->_type] = array();
     }
   }
 
