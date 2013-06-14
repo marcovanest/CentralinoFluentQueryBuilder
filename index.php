@@ -2,7 +2,7 @@
 
 include 'src/Bootstrap.php';
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USERNAME}', '{PASSWORD}');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
@@ -20,10 +20,14 @@ $builder->join('wp_usermeta')->nested(function($builder){
 });
 
 $builder->where()->nested(function($builder){
-  $builder->where('user_id', '=', 5);
-  $builder->where('user_id', '=', 6);
+  $builder->compare('user_id', '=', 5);
+  $builder->compare('user_id', '=', 6);
   $builder->between('user_id', 1, 6);
-})->where()->in('user_id', array(1,4));
+  $builder->in('user_id', array(1,4));
+});
+
+$builder->where('user_id')->in(array(1,4));
+$builder->where('user_id')->between(7, 8);
 
 $builder->limit(0, 5);
 $builder->order('user_id', 'ASC');

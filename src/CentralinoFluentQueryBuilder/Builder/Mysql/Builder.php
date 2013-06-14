@@ -25,9 +25,9 @@ class Builder extends General
     return new Join($table);
   }
 
-  public function where()
+  public function where($table = null)
   {
-    return new Where();
+    return new Where($table);
   }
 
   public function nested(\Closure $function)

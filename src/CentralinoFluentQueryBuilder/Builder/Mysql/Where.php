@@ -6,8 +6,11 @@ class Where extends Builder
 
   public $where_position;
 
-  public function __construct()
+  public $table;
+
+  public function __construct($table)
   { 
+    $this->table = $table;   
     $this->_type = 'where';  
 
     if(!isset(parent::$_build[$this->_type]))
@@ -16,9 +19,22 @@ class Where extends Builder
     }
   }
 
-  public function where($firstcolumn= null, $operator = null, $secondcolumn = null, $type = 'AND')
+  public function compare()
   {
-    $condition = new Condition();
+    $arguments    = func_get_args();
+    $numargument  = func_num_args();
+
+    echo '<pre>';
+    print_r($arguments);
+
+
+    $firstcolumn  = $numargument >= 3 ? $arguments[0] : $this->table;
+    $operator     = $numargument >= 3 ? $arguments[1] : $arguments[0];
+    $secondcolumn = $numargument >= 3 ? $arguments[2] : $arguments[1];
+
+    $type         = $numargument >= 3 ? $arguments[3] : $arguments[2];
+
+    $condition = new Condition('compare');
     $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
 
     parent::addCondition($condition);
@@ -26,9 +42,16 @@ class Where extends Builder
     return $this;
   }
 
-  public function between($column, $firstvalue, $secondvalue)
+  public function between()
   {
-    $condition = new Condition();
+    $arguments    = func_get_args();
+    $numargument  = func_num_args();
+
+    $column       = $numargument > 2 ? $arguments[0] : $this->table;
+    $firstvalue   = $numargument > 2 ? $arguments[1] : $arguments[0];
+    $secondvalue  = $numargument > 2 ? $arguments[2] : $arguments[1];
+
+    $condition = new Condition('between');
     $condition->range(compact('column', 'firstvalue', 'secondvalue'));
 
     parent::addCondition($condition);
@@ -36,9 +59,15 @@ class Where extends Builder
     return $this;
   }
 
-  public function in($column, $values)
+  public function in()
   {
-    $condition = new Condition();
+    $arguments   = func_get_args();
+    $numargument = func_num_args();
+
+    $column = $numargument > 1 ? $arguments[0] : $this->table;
+    $values = $numargument > 1 ? $arguments[1] : $arguments[0];
+
+    $condition = new Condition('in');
     $condition->contains(compact('column', 'values'));
 
     parent::addCondition($condition);

@@ -18,7 +18,7 @@ class Join extends Builder
 
   public function on($firstcolumn, $operator = null, $secondcolumn = null, $type = 'AND')
   {
-    $condition = new Condition();
+    $condition = new Condition('compare');
     $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
 
     parent::addCondition($condition);

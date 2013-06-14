@@ -4,10 +4,12 @@ class Condition
 {
   public $parameters = array();
 
-  public function __construct()
-  {
+  public $type;
 
-  }
+  public function __construct($type)
+  {
+    $this->type = $type;
+  } 
 
   public  function compare($parameters)
   {
