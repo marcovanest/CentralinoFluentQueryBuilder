@@ -22,6 +22,8 @@ class Where extends Builder
     $condition->compare(compact('firstcolumn', 'operator', 'secondcolumn', 'type'));
 
     parent::addCondition($condition);
+
+    return $this;
   }
 
   public function between($column, $firstvalue, $secondvalue)
@@ -30,14 +32,18 @@ class Where extends Builder
     $condition->range(compact('column', 'firstvalue', 'secondvalue'));
 
     parent::addCondition($condition);
+
+    return $this;
   }
 
   public function in($column, $values)
   {
     $condition = new Condition();
-    $condition->range(compact('column', 'values'));
+    $condition->contains(compact('column', 'values'));
 
     parent::addCondition($condition);
+
+    return $this;
   }
 
   public function exists()

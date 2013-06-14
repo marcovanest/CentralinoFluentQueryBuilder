@@ -63,7 +63,7 @@ class Builder extends General
       }
       else
       {
-         self::$_build[$this->_type][$this->table][] = $condition;   
+        self::$_build[$this->_type][$this->table][] = $condition;   
       }
           
     }
@@ -71,7 +71,7 @@ class Builder extends General
     {
       if($this->nested)
       {
-       self::$_build[$this->_type][$this->where_position][] = $condition; 
+        self::$_build[$this->_type][$this->where_position][] = $condition; 
       }
       else
       {
