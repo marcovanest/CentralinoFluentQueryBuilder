@@ -36,7 +36,15 @@ class Builder extends General
 
     if(is_callable($function))
     {
-      $this->conditionposition = count(self::$_build[$this->_type]);
+      if($this instanceof Join)
+      {
+        $this->conditionposition = count(self::$_build[$this->_type][$this->table]);
+      }
+      elseif($this instanceof Where)
+      {
+        $this->conditionposition = count(self::$_build[$this->_type]); 
+      }
+     
 
       call_user_func($function, $this);
     }
@@ -64,11 +72,25 @@ class Builder extends General
   {
     if($this->nested)
     {
-      self::$_build[$this->_type][$this->conditionposition][] = $condition;
+      if($this instanceof Join)
+      {
+        self::$_build[$this->_type][$this->table][$this->conditionposition][] = $condition;
+      }
+      elseif ($this instanceof Where) 
+      {
+        self::$_build[$this->_type][$this->conditionposition][] = $condition;
+      }
     }
     else
     {
-      self::$_build[$this->_type][] = $condition;   
+      if($this instanceof Join)
+      {
+        self::$_build[$this->_type][$this->table][] = $condition;   
+      }
+      elseif($this instanceof Where)
+      {
+        self::$_build[$this->_type][] = $condition;   
+      }
     }     
   }
   

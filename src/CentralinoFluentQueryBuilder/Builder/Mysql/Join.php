@@ -13,9 +13,9 @@ class Join extends Builder
     $this->table = $table;   
     $this->_type = 'join';   
 
-    if(!isset(parent::$_build[$this->_type]))
+    if(!isset(parent::$_build[$this->_type][$this->table]))
     {
-      parent::$_build[$this->_type] = array();
+      parent::$_build[$this->_type][$this->table] = array();
     }
   }
 
