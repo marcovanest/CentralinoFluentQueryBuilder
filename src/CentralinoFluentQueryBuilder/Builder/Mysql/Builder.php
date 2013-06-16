@@ -46,6 +46,20 @@ class Builder extends General
     return $this;
   }
 
+  protected function prepareArguments($left, $arguments)
+  {
+    if(empty($left))
+    {
+      return $arguments;
+    }
+    else
+    {
+      array_unshift($arguments, $left);
+
+      return $arguments;
+    }
+  }
+
   protected function addCondition($condition)
   {
     if($this->nested)

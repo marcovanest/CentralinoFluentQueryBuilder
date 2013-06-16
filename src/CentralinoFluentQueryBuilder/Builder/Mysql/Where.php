@@ -6,11 +6,11 @@ class Where extends Builder
 
   public $where_position;
 
-  public $table;
+  public $left;
 
-  public function __construct($table)
+  public function __construct($left)
   { 
-    $this->table = $table;   
+    $this->left  = $left;   
     $this->_type = 'where';  
 
     if(!isset(parent::$_build[$this->_type]))
@@ -21,11 +21,10 @@ class Where extends Builder
 
   public function compare()
   {  
-    $table      = $this->table;
-    $arguments  = func_get_args();
+    $arguments = $this->prepareArguments($this->left, func_get_args());
 
     $condition = new Condition('compare');
-    $condition->compare($table, $arguments);
+    $condition->compare($arguments);
 
     parent::addCondition($condition);
 
@@ -34,11 +33,10 @@ class Where extends Builder
 
   public function between()
   {
-    $table      = $this->table;
-    $arguments  = func_get_args();
+    $arguments = $this->prepareArguments($this->left, func_get_args());
 
     $condition = new Condition('between');
-    $condition->range($table, $arguments);
+    $condition->range($arguments);
 
     parent::addCondition($condition);
 
@@ -47,15 +45,38 @@ class Where extends Builder
 
   public function in()
   {
-    $table      = $this->table;
-    $arguments  = func_get_args();
+    $arguments = $this->prepareArguments($this->left, func_get_args());
 
     $condition = new Condition('in');
-    $condition->contains($table, $arguments);
+    $condition->comparelist($arguments);
 
     parent::addCondition($condition);
 
     return $this;
+  }
+
+  public function notin()
+  {
+    $arguments = $this->prepareArguments($this->left, func_get_args());
+
+    $condition = new Condition('notin');
+    $condition->comparelist($arguments, 'NOT');
+
+    parent::addCondition($condition);
+
+    return $this; 
+  }
+
+  public function like()
+  {
+    $arguments = $this->prepareArguments($this->left, func_get_args());
+
+    $condition = new Condition('contains');
+    $condition->contains($arguments);
+
+    parent::addCondition($condition);
+
+    return $this; 
   }
 
   public function exists()

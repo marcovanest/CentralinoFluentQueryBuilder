@@ -21,11 +21,10 @@ class Join extends Builder
 
   public function on($firstcolumn, $operator = null, $secondcolumn = null, $type = 'AND')
   {
-    $table      = $this->table;
     $arguments  = func_get_args();
 
-    $condition = new Condition('compare');
-    $condition->compare($table, $arguments);
+    $condition = new Condition('compare', $this->table);
+    $condition->compare($arguments);
 
     parent::addCondition($condition);
      

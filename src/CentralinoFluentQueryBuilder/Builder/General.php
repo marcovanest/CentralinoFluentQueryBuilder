@@ -23,4 +23,22 @@ class General
         return new Mysql\Builder();
     }
   }
+
+  public static function valdiateOperator($operator)
+  {
+    $operators = array();
+    $operators[] = '=';
+    $operators[] = '<=>';
+    $operators[] = '>=';
+    $operators[] = '>';
+    $operators[] = '<=';
+    $operators[] = '<';
+    $operators[] = '<>';
+    $operators[] = '!=';
+
+    if(!in_array($operator, $operators))
+    {
+      throw new Exception("Invalid operator given", 1);
+    }
+  }
 }
