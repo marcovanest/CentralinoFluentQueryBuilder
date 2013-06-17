@@ -45,7 +45,6 @@ class Builder extends General
         $this->conditionposition = count(self::$_build[$this->_type]); 
       }
      
-
       call_user_func($function, $this);
     }
 

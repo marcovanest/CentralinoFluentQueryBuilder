@@ -71,12 +71,48 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->left, func_get_args());
 
-    $condition = new Condition('contains');
+    $condition = new Condition('like');
     $condition->contains($arguments);
 
     parent::addCondition($condition);
 
     return $this; 
+  }
+
+  public function notlike()
+  {
+    $arguments = $this->prepareArguments($this->left, func_get_args());
+
+    $condition = new Condition('notlike');
+    $condition->contains($arguments, 'NOT');
+
+    parent::addCondition($condition);
+
+    return $this;  
+  }
+
+  public function isnull()
+  {
+    $arguments = $this->prepareArguments($this->left, func_get_args());
+
+    $condition = new Condition('isnull');
+    $condition->isnull($arguments, 'NOT');
+
+    parent::addCondition($condition);
+
+    return $this;      
+  }
+
+  public function isnotnull()
+  {
+    $arguments = $this->prepareArguments($this->left, func_get_args());
+
+    $condition = new Condition('isnotnull');
+    $condition->isnull($arguments, 'NOT');
+
+    parent::addCondition($condition);
+
+    return $this;      
   }
 
   public function exists()

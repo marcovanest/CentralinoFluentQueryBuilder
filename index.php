@@ -28,8 +28,17 @@ $builder->where()->nested(function($builder){
 });
 
 $builder->where('user_id')->in(array(1,4));
+$builder->where('user_id')->notin(array(1,4));
+
 $builder->where('user_id')->between(7, 8);
+
 $builder->where('user_id')->compare('=', 'wp_users.ID');
+
+$builder->where('user_id')->like('5');
+$builder->where('user_id')->notlike('5');
+
+$builder->where('user_id')->isnull();
+$builder->where('user_id')->isnotnull();
 
 $builder->limit(0, 5);
 $builder->order('user_id', 'ASC');

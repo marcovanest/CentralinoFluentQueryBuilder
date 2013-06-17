@@ -24,7 +24,7 @@ class General
     }
   }
 
-  public static function valdiateOperator($operator)
+  public static function validateOperator($operator)
   {
     $operators = array();
     $operators[] = '=';
