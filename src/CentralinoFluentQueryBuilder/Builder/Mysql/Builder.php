@@ -30,6 +30,11 @@ class Builder extends General
     return new Where($table);
   }
 
+  public function or_where($table = null)
+  {
+    return new Where($table, 'OR');
+  }
+
   public function nested(\Closure $function)
   {
     $this->nested = true;
@@ -73,22 +78,22 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][$this->conditionposition][] = $condition;
+        self::$_build[$this->_type][$this->table]->conditions[$this->conditionposition][] = $condition;
       }
       elseif ($this instanceof Where) 
       {
-        self::$_build[$this->_type][$this->conditionposition][] = $condition;
+        self::$_build[$this->_type]->conditions[$this->conditionposition][] = $condition;
       }
     }
     else
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][] = $condition;   
+        self::$_build[$this->_type][$this->table]->conditions[] = $condition;   
       }
       elseif($this instanceof Where)
       {
-        self::$_build[$this->_type][] = $condition;   
+        self::$_build[$this->_type]->conditions[] = $condition;
       }
     }     
   }

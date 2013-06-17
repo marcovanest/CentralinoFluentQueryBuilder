@@ -2,11 +2,8 @@
 
 class Join extends Builder
 {
-  public $parameters = array();
-
   public $table;
-
-  public $on_position;
+  public $conditions = array();
 
   public function __construct($table)
   {
@@ -15,7 +12,7 @@ class Join extends Builder
 
     if(!isset(parent::$_build[$this->_type][$this->table]))
     {
-      parent::$_build[$this->_type][$this->table] = array();
+      parent::$_build[$this->_type][$this->table] = $this;
     }
   }
 

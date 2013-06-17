@@ -2,20 +2,19 @@
 
 class Where extends Builder
 {
-  public $parameters = array();
+  private $_left;
+  private $_logicaloperator;
+  public  $conditions = array();
 
-  public $where_position;
-
-  public $left;
-
-  public function __construct($left)
+  public function __construct($left, $logicaloperator = 'AND')
   { 
-    $this->left  = $left;   
-    $this->_type = 'where';  
+    $this->left             = $left;   
+    $this->_type            = 'where';  
+    $this->_logicaloperator = $logicaloperator;  
 
     if(!isset(parent::$_build[$this->_type]))
     {
-      parent::$_build[$this->_type] = array();
+      parent::$_build[$this->_type] = $this;
     }
   }
 
