@@ -48,7 +48,7 @@ $builder->where('user_id')->isnotnull();
 $builder->where('user_id')->like('5');
 $builder->where('user_id')->notlike('5');
 
-$builder->limit(0, 5);
+$builder->limit(0, 10);
 
 $builder->order('user_id', 'ASC');
 
