@@ -43,11 +43,11 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        $this->conditionposition = count(self::$_build[$this->_type][$this->table]);
+        $this->conditionposition = count(self::$_build[$this->_type][$this->table]->conditions);
       }
       elseif($this instanceof Where)
       {
-        $this->conditionposition = count(self::$_build[$this->_type]); 
+        $this->conditionposition = count(self::$_build[$this->_type]->conditions); 
       }
      
       call_user_func($function, $this);
