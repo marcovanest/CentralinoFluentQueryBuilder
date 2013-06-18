@@ -10,6 +10,12 @@ class Builder extends General
 
   protected $_type;
 
+  protected $_whereposition;
+
+  protected $_conditionposition;
+  
+  protected $_joinposition;
+
   public function __construct()
   {
     
@@ -43,11 +49,11 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        $this->conditionposition = count(self::$_build[$this->_type][$this->table]->conditions);
+        $this->_conditionposition = count(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions);
       }
       elseif($this instanceof Where)
       {
-        $this->conditionposition = count(self::$_build[$this->_type]->conditions); 
+        $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->conditions); 
       }
      
       call_user_func($function, $this);
@@ -78,22 +84,22 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table]->conditions[$this->conditionposition][] = $condition;
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition][] = $condition;
       }
       elseif ($this instanceof Where) 
       {
-        self::$_build[$this->_type]->conditions[$this->conditionposition][] = $condition;
+        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition][] = $condition;
       }
     }
     else
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table]->conditions[] = $condition;   
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[] = $condition;   
       }
       elseif($this instanceof Where)
       {
-        self::$_build[$this->_type]->conditions[] = $condition;
+        self::$_build[$this->_type][$this->_whereposition]->conditions[] = $condition;
       }
     }     
   }
