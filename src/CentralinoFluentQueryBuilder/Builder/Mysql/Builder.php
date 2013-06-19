@@ -4,7 +4,7 @@ use CentralinoFluentQueryBuilder\Builder\General;
 
 class Builder extends General
 {
-  protected $nested = false;
+  private $_nested = false;
 
   protected static $_build = array();
 
@@ -13,7 +13,7 @@ class Builder extends General
   protected $_whereposition;
 
   protected $_conditionposition;
-  
+
   protected $_joinposition;
 
   public function __construct()
@@ -43,7 +43,7 @@ class Builder extends General
 
   public function nested(\Closure $function)
   {
-    $this->nested = true;
+    $this->_nested = true;
 
     if(is_callable($function))
     {
@@ -59,7 +59,7 @@ class Builder extends General
       call_user_func($function, $this);
     }
 
-    $this->nested = false;
+    $this->_nested = false;
 
     return $this;
   }
@@ -80,7 +80,7 @@ class Builder extends General
 
   protected function addCondition($condition)
   {
-    if($this->nested)
+    if($this->_nested)
     {
       if($this instanceof Join)
       {

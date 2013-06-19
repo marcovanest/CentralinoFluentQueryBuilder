@@ -6,9 +6,12 @@ class Condition
 
   public $type;
 
-  public function __construct($type)
+  public $logicaloperator;
+
+  public function __construct($type, $logicaloperator = 'AND')
   {
-    $this->type  = $type;
+    $this->type             = $type;
+    $this->logicaloperator  = $logicaloperator;
   } 
 
   public function compare($arguments)
@@ -20,25 +23,25 @@ class Condition
 
   public function comparelist($arguments)
   {
-    $this->arguments['left']  = $arguments[0];
-    $this->arguments['list']  = $arguments[1];
+    $this->arguments['left'] = $arguments[0];
+    $this->arguments['list'] = $arguments[1];
   }
 
   public function range($arguments)
   {
-    $this->arguments['left']    = $arguments[0];
-    $this->arguments['min']     = $arguments[1];
-    $this->arguments['max']     = $arguments[2];
+    $this->arguments['left'] = $arguments[0];
+    $this->arguments['min']  = $arguments[1];
+    $this->arguments['max']  = $arguments[2];
   }
 
   public function contains($arguments)
   {
-    $this->arguments['left']      = $arguments[0];
-    $this->arguments['contains']  = $arguments[1];
+    $this->arguments['left']     = $arguments[0];
+    $this->arguments['contains'] = $arguments[1];
   }
 
   public function isnull($arguments)
   {
-    $this->arguments['left']      = $arguments[0];
+    $this->arguments['left'] = $arguments[0];
   }
 }
