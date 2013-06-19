@@ -14,27 +14,27 @@ $builder->select(array('*'));
 
 $builder->join('wp_usermeta')->on('user_id', '=', 'wp_users.ID');
 
-$builder->join('wp_usermeta')->nested(function($builder){
-  $builder->on('user_id', '=', 'wp_users.ID');
-  $builder->or_on('user_id', '=', 'wp_users.ID');
-});
+// $builder->join('wp_usermeta')->nested(function($builder){
+//   $builder->on('user_id', '=', 'wp_users.ID');
+//   $builder->on('user_id', '=', 'wp_users.ID');
+// });
 
-$builder->where()->nested(function($where){
- $where->compare('user_id', '=', 5);
+// $builder->where()->nested(function($where){
+//  $where->compare('user_id', '=', 5);
   
- $where->between('user_id', 1, 6);
+//  $where->between('user_id', 1, 6);
 
-  $where->or_in('user_id', array(1,4));
-  $where->notin('user_id', array(1,4));
+//   $where->or_in('user_id', array(1,4));
+//   $where->notin('user_id', array(1,4));
 
-  $where->isnull('user_id');
-  $where->isnotnull('user_id');
+//   $where->isnull('user_id');
+//   $where->isnotnull('user_id');
 
-  $where->like('user_id', 'test');
-  $where->notlike('user_id', 'test');
-});
+//   $where->like('user_id', 'test');
+//   $where->notlike('user_id', 'test');
+// });
 
-//$builder->where('user_id')->compare('=', 'wp_users.ID');
+// $builder->where('user_id')->compare('=', 'wp_users.ID');
 
 // $builder->where('user_id')->between(7, 8);
 
@@ -47,7 +47,7 @@ $builder->where()->nested(function($where){
 // $builder->where('user_id')->like('5');
 // $builder->where('user_id')->notlike('5');
 
-//$builder->or_where('user_id')->notlike('5');
+// $builder->or_where('user_id')->notlike('5');
 
 // $builder->limit(0, 5);
 
