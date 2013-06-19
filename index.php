@@ -19,6 +19,7 @@ $builder->join('wp_usermeta')->nested(function($builder){
   $builder->on('user_id', '=', 'wp_users.ID');
 })->or_on('user_id', '=', 'wp_users.ID');
 
+
 $builder->where()->nested(function($where){
  $where->compare('user_id', '=', 5);
   

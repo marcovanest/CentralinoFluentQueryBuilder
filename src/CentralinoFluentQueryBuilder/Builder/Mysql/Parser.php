@@ -53,11 +53,8 @@ class Parser extends Builder
           {
             $nested = is_array($join->conditions[0]) ? true : false;
 
-            $sql .= $nested ? ' ( ' : '';
-
             $sql .= $this->_parseConditions($join->conditions);
 
-            $sql .= $nested ? ' ) ' : '';
           }
         }
       }
@@ -93,7 +90,7 @@ class Parser extends Builder
     {
       if(is_array($condition))
       {
-        $sql .= $nested ? ' ( ' : '';
+        $sql .= ' ( ';
         $this->_parseConditions($condition, $sql, true);
       }
 
