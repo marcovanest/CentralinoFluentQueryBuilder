@@ -4,14 +4,16 @@ class Join extends Builder
 {
   public $table;
   public $conditions = array();
+  public $logicaloperator;
+  public $alias;
 
   public function __construct($table, $logicaloperator = 'AND')
   {
     $this->_type            = 'join';  
     $this->table            = $table;    
-    $this->_joinposition    = isset(parent::$_build[$this->_type]) && isset(parent::$_build[$this->_type][$this->table]) ? count(parent::$_build[$this->_type][$this->table]) : 0;
-    $this->logicaloperator  = $logicaloperator;  
+    $this->logicaloperator  = $logicaloperator; 
 
+    $this->_joinposition    = isset(parent::$_build[$this->_type]) && isset(parent::$_build[$this->_type][$this->table]) ? count(parent::$_build[$this->_type][$this->table]) : 0;
     parent::$_build[$this->_type][$this->table][] = $this;
   }
 
@@ -33,5 +35,12 @@ class Join extends Builder
     $condition->compare($arguments);
 
     parent::addCondition($condition);
+  }
+
+  public function alias($alias)
+  {
+    $this->alias = $alias;
+
+    return $this;
   }
 }
