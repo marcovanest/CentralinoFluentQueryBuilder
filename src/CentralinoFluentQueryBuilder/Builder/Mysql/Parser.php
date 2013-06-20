@@ -51,10 +51,7 @@ class Parser extends Builder
 
           if($join instanceof Join)
           {
-            $nested = is_array($join->conditions[0]) ? true : false;
-
             $sql .= $this->_parseConditions($join->conditions);
-
           }
         }
       }
@@ -88,89 +85,96 @@ class Parser extends Builder
   {
     foreach ($conditions as $conditionposition => $condition) 
     {
-      if(is_array($condition))
+      if($condition instanceof \ArrayObject)
       {
-        $sql .= ' ( ';
+        $sql .= '( ';
         $this->_parseConditions($condition, $sql, true);
       }
-
+      
       if($condition instanceof Condition)
       {
-        if($conditionposition !== 0)
-        {
-          $sql .= $condition->logicaloperator.' ';
-        }
-
-        switch ($condition->type) 
-        {
-          case 'compare':
-            $left     = $condition->arguments['left'];
-            $operator = $condition->arguments['operator'];
-            $right    = $condition->arguments['right'];
-
-            $sql .= $left.' '.$operator.' '.$right.' ';
-            break;
-
-         case 'between':
-            $left     = $condition->arguments['left'];
-            $min      = $condition->arguments['min'];
-            $max      = $condition->arguments['max'];
-
-            $sql .= $left.' BETWEEN '.$min.' AND '.$max.' ';
-            break;
-
-         case 'in':
-            $left     = $condition->arguments['left'];
-            $list     = $condition->arguments['list'];
-
-            $sql .= $left.' IN ('.implode(', ', $list).') '; 
-            break;
-
-          case 'notin':
-            $left     = $condition->arguments['left'];
-            $list     = $condition->arguments['list'];
-
-            $sql .= $left.' NOT IN ('.implode(', ', $list).') '; 
-            break;
-
-          case 'isnull':
-            $left     = $condition->arguments['left'];
-
-            $sql .= $left.' IS NULL '; 
-            break;
-
-          case 'isnotnull':
-            $left     = $condition->arguments['left'];
-
-            $sql .= $left.' IS NOT NULL '; 
-            break;
-          
-          case 'like':
-            $left     = $condition->arguments['left'];
-            $contains = $condition->arguments['contains'];
-
-            $sql .= $left.' LIKE ("%'.$contains.'%") '; 
-            break;
-          
-          case 'notlike':
-            $left     = $condition->arguments['left'];
-            $contains = $condition->arguments['contains'];
-
-            $sql .= $left.' NOT LIKE ("%'.$contains.'%") '; 
-            break;
-
-          default:
-            # code...
-            break;
-        }
+        $sql .= $this->_parseCondition($condition, $conditionposition);
       }
     }
 
     if($nested)
     {
-      $sql .= $nested ? ' ) ' : '';
+      $sql .= $nested ? ') ' : '';
     }
 
+    return $sql;
+  }
+
+  private function _parseCondition(Condition $condition, $conditionposition)
+  {
+    $sql = '';
+    if($conditionposition !== 0)
+    {
+      $sql .= $condition->logicaloperator.' ';
+    }
+
+    switch ($condition->type) 
+    {
+      case 'compare':
+        $left     = $condition->arguments['left'];
+        $operator = $condition->arguments['operator'];
+        $right    = $condition->arguments['right'];
+
+        $sql .= $left.' '.$operator.' '.$right.' ';
+        break;
+
+     case 'between':
+        $left     = $condition->arguments['left'];
+        $min      = $condition->arguments['min'];
+        $max      = $condition->arguments['max'];
+
+        $sql .= $left.' BETWEEN '.$min.' AND '.$max.' ';
+        break;
+
+     case 'in':
+        $left     = $condition->arguments['left'];
+        $list     = $condition->arguments['list'];
+
+        $sql .= $left.' IN ('.implode(', ', $list).') '; 
+        break;
+
+      case 'notin':
+        $left     = $condition->arguments['left'];
+        $list     = $condition->arguments['list'];
+
+        $sql .= $left.' NOT IN ('.implode(', ', $list).') '; 
+        break;
+
+      case 'isnull':
+        $left     = $condition->arguments['left'];
+
+        $sql .= $left.' IS NULL '; 
+        break;
+
+      case 'isnotnull':
+        $left     = $condition->arguments['left'];
+
+        $sql .= $left.' IS NOT NULL '; 
+        break;
+      
+      case 'like':
+        $left     = $condition->arguments['left'];
+        $contains = $condition->arguments['contains'];
+
+        $sql .= $left.' LIKE ("%'.$contains.'%") '; 
+        break;
+      
+      case 'notlike':
+        $left     = $condition->arguments['left'];
+        $contains = $condition->arguments['contains'];
+
+        $sql .= $left.' NOT LIKE ("%'.$contains.'%") '; 
+        break;
+
+      default:
+        # code...
+        break;
+    }
     return $sql;
   }
 }

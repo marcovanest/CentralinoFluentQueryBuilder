@@ -49,11 +49,11 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        $this->_conditionposition = count(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions);
+        $this->_conditionposition = self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions->count();
       }
       elseif($this instanceof Where)
       {
-        $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->conditions); 
+        $this->_conditionposition = self::$_build[$this->_type][$this->_whereposition]->conditions->count(); 
       }
      
       call_user_func($function, $this);
@@ -84,22 +84,30 @@ class Builder extends General
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition][] = $condition;
+        if(!isset(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition]))
+        {
+          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = new \ArrayObject();
+        }
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition]->append($condition);
       }
       elseif ($this instanceof Where) 
       {
-        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition][] = $condition;
+        if(!isset(self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]))
+        {
+          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = new \ArrayObject();
+        }
+        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]->append($condition);
       }
     }
     else
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[] = $condition;   
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions->append($condition);   
       }
       elseif($this instanceof Where)
       {
-        self::$_build[$this->_type][$this->_whereposition]->conditions[] = $condition;
+        self::$_build[$this->_type][$this->_whereposition]->conditions->append($condition);
       }
     }     
   }

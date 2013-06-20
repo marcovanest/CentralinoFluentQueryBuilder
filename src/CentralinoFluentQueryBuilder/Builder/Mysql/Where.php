@@ -4,16 +4,21 @@ class Where extends Builder
 {
   private $_left;
   public  $logicaloperator;
-  public  $conditions = array();
+  public  $conditions;
 
   public function __construct($left, $logicaloperator = 'AND')
   { 
     $this->_type            = 'where';  
     $this->_left            = $left;  
-    $this->_whereposition   = isset(parent::$_build[$this->_type]) ? count(parent::$_build[$this->_type]) : 0;
-    $this->logicaloperator  = $logicaloperator;   
+    $this->_whereposition   = isset(parent::$_build[$this->_type]) ? parent::$_build[$this->_type]->count() : 0;
+    $this->logicaloperator  = $logicaloperator; 
+    $this->conditions       = new \ArrayObject();  
 
-    parent::$_build[$this->_type][] = $this;
+    if(!isset(parent::$_build[$this->_type]))
+    {
+      parent::$_build[$this->_type] = new \ArrayObject();
+    }
+    parent::$_build[$this->_type]->append($this);
   }
 
   public function compare()
