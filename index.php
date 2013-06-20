@@ -20,26 +20,31 @@ $builder->join('wp_usermeta')
   $builder->on('1', '=', '1');
   $builder->on('2', '=', '2');
 })
+->or_nested(function($builder){
+  $builder->on('user_id', '=', 'wp_users.ID');
+  $builder->on('user_id', '=', 'wp_users.ID');
+})
 ->nested(function($builder){
-  $builder->on('user_id', '=', 'wp_users.ID');
-  $builder->on('user_id', '=', 'wp_users.ID');
+  $builder->on('1', '=', '1');
+  $builder->on('2', '=', '2');
 });
 
 
-// $builder->where()->nested(function($where){
-//  $where->compare('user_id', '=', 5);
-  
-//  $where->between('user_id', 1, 6);
+$builder->where()->nested(function($where){
+ $where->compare('user_id', '=', 5);
+ $where->between('user_id', 1, 6);
 
-//   $where->or_in('user_id', array(1,4));
-//   $where->notin('user_id', array(1,4));
 
-//   $where->isnull('user_id');
-//   $where->isnotnull('user_id');
+  $where->isnull('user_id');
+  $where->isnotnull('user_id');
 
-//   $where->like('user_id', 'test');
-//   $where->notlike('user_id', 'test');
-// });
+  $where->like('user_id', 'test');
+  $where->notlike('user_id', 'test');
+})->or_nested(function($where){
+    $where->or_in('user_id', array(1,4));
+  $where->notin('user_id', array(1,4));
+
+});
 
 //$builder->where('user_id')->compare('=', 'wp_users.ID');
 //$builder->where('user_id')->between(7, 8);

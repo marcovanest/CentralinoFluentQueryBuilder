@@ -16,6 +16,8 @@ class Builder extends General
 
   protected $_joinposition;
 
+  protected $_nestedoperators;
+
   public function __construct()
   {
     
@@ -43,6 +45,16 @@ class Builder extends General
 
   public function nested(\Closure $function)
   {
+    return $this->_handleNested($function, 'AND');
+  }
+
+  public function or_nested(\Closure $function)
+  {
+    return $this->_handleNested($function, 'OR');
+  }
+
+  private function _handleNested($function, $logicaloperator)
+  {
     $this->_nested = true;
 
     if(is_callable($function))
@@ -50,12 +62,14 @@ class Builder extends General
       if($this instanceof Join)
       {
         $this->_conditionposition = self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions->count();
+        $this->_nestedoperators[$this->_joinposition][$this->_conditionposition] = $logicaloperator; 
       }
       elseif($this instanceof Where)
       {
         $this->_conditionposition = self::$_build[$this->_type][$this->_whereposition]->conditions->count(); 
+        $this->_nestedoperators[$this->_whereposition][$this->_conditionposition] = $logicaloperator; 
       }
-     
+
       call_user_func($function, $this);
     }
 
@@ -94,7 +108,7 @@ class Builder extends General
       {
         if(!isset(self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]))
         {
-          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = new \ArrayObject();
+          self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition] = new \ArrayObject();
         }
         self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]->append($condition);
       }

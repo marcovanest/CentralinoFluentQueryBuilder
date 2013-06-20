@@ -14,7 +14,7 @@ class Join extends Builder
     $this->logicaloperator  = $logicaloperator; 
     $this->conditions       = new \ArrayObject();
 
-    $this->_joinposition    = isset(parent::$_build[$this->_type]) && isset(parent::$_build[$this->_type][$this->table]) ? parent::$_build[$this->_type][$this->table]->count() : 0;
+    $this->_joinposition    = isset(parent::$_build[$this->_type][$this->table]) ? parent::$_build[$this->_type][$this->table]->count() : 0;
     
     if(!isset(parent::$_build[$this->_type]))
     {

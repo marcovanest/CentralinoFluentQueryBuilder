@@ -51,7 +51,7 @@ class Parser extends Builder
 
           if($join instanceof Join)
           {
-            $sql .= $this->_parseConditions($join->conditions);
+            $sql .= $this->_parseConditions($join->conditions, $join->_nestedoperators[$joinposition]);
           }
         }
       }
@@ -65,30 +65,30 @@ class Parser extends Builder
     if(isset(self::$_build['where']))
     {
       $sql = 'WHERE ';
-      foreach (self::$_build['where'] as $conditionposition => $where) 
+      foreach (self::$_build['where'] as $whereposition => $where) 
       {
-        if($conditionposition !== 0)
+        if($whereposition !== 0)
         {
           $sql .= $where->logicaloperator.' ';
         }
 
         if($where instanceof Where)
         {
-          $sql .= $this->_parseConditions($where->conditions);          
+          $sql .= $this->_parseConditions($where->conditions, $where->_nestedoperators[$whereposition]);          
         }
       }
       return $sql;
     } 
   }
 
-  private function _parseConditions($conditions, &$sql = '', $nested = false)
+  private function _parseConditions($conditions, $logicaloperators = null, &$sql = '', $nested = false)
   {
     foreach ($conditions as $conditionposition => $condition) 
     {
       if($condition instanceof \ArrayObject)
       {
-        $sql .= '( ';
-        $this->_parseConditions($condition, $sql, true);
+        $sql .= ($conditionposition != 0 ? $logicaloperators[$conditionposition] : '').' ( ';
+        $this->_parseConditions($condition, null, $sql, true);
       }
       
       if($condition instanceof Condition)
