@@ -147,12 +147,15 @@ class Builder extends General
     return $this;
   }
 
-  public function transform()
+  public function get()
   {
-    echo '<pre>';
-    print_r(self::$_build);
     $parser = new Parser();
-    return $parser->parse();
+    $this->execute($parser->parse());
+  }
+
+  public function __call($name, $arguments)
+  {
+    
   }
 }
 

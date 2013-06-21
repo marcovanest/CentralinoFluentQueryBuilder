@@ -20,4 +20,16 @@ class Connection
   {
     return $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
   }
+
+  public function prepare($sSql)
+  {
+    try
+    {
+      return new Statement($this->_pdo->prepare($sSql));
+    }
+    catch (\PDOException $e)
+    {
+      throw new \Exception("Error Processing Request". $e->getMessage(), 1);
+    }
+  }
 }

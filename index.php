@@ -1,7 +1,7 @@
 <?php
 include 'src/Bootstrap.php';
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname=lmoors', 'root', 'tar');
 
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
@@ -27,7 +27,7 @@ $builder->join('wp_usermeta')
 ->nested(function($builder){
   $builder->on('1', '=', '1');
   $builder->on('2', '=', '2');
-});
+})->where_size('324');
 
 
 $builder->where()->nested(function($where){
@@ -40,7 +40,7 @@ $builder->where()->nested(function($where){
 
   $where->like('user_id', 'test');
   $where->notlike('user_id', 'test');
-})->or_nested(function($where){
+})->or_where()->nested(function($where){
     $where->or_in('user_id', array(1,4));
   $where->notin('user_id', array(1,4));
 
@@ -66,7 +66,7 @@ $builder->where()->nested(function($where){
 
 // $builder->group('user_id');
 
-$s = $builder->transform();
+$s = $builder->get();
 
 echo '<pre>';
 print_r($s);

@@ -10,14 +10,14 @@ class General
 
   public function __construct(Connection $connection)
   {
-    static::$_connection = $connection;
+    self::$_connection = $connection;
   }
 
   public static function table($table)
   {
     static::$_table = $table;
 
-    switch(static::$_connection->getDriverName())
+    switch(self::$_connection->getDriverName())
     {
       case 'mysql':
         return new Mysql\Builder();
@@ -40,5 +40,11 @@ class General
     {
       throw new Exception("Invalid operator given", 1);
     }
+  }
+
+  protected function execute($sql)
+  {
+    $statement = self::$_connection->prepare($sql);
+    var_dump($statement);
   }
 }
