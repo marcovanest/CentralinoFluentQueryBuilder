@@ -1,7 +1,7 @@
 <?php
 include 'src/Bootstrap.php';
 
-$pdo = new PDO('mysql:host=127.0.0.1;dbname=lmoors', 'root', 'tar');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
