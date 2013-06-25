@@ -21,50 +21,50 @@ class Select extends Builder
     }
   }
 
-  public function columns(array $columns)
+  public function columns(array $columns, $table = null)
   {
     foreach ($columns as $column) 
     {
-      $column = new Column($column, 'normal');
+      $column = new Column($column, 'normal', $table);
       parent::$_build['select']->append($column);
     }
     
     return $this;
   }
 
-  public function count($column)
+  public function count($column, $table = null)
   {
-    $column = new Column($column, 'count');
+    $column = new Column($column, 'count', $table);
     parent::$_build['select']->append($column);
 
     return $this;
   }
 
-  public function countdistinct($column)
+  public function countdistinct($column, $table = null)
   {
-    $column = new Column($column, 'countdistinct');
+    $column = new Column($column, 'countdistinct', $table);
     parent::$_build['select']->append($column);
 
     return $this;
   }
 
-  public function sum($column)
+  public function sum($column, $table = null)
   {
-    $column = new Column($column, 'countdistinct');
+    $column = new Column($column, 'countdistinct', $table);
     parent::$_build['select']->append($column);
 
     return $this;
   }
 
-  public function min($column)
+  public function min($column, $table = null)
   {
-    $column = new Column($column, 'min');
+    $column = new Column($column, 'min', $table);
     parent::$_build['select']->append($column);
 
     return $this;
   }
 
-  public function max($column)
+  public function max($column, $table = null)
   {
     $column = new Column($column, 'max');
     parent::$_build['select']->append($column);
@@ -72,11 +72,24 @@ class Select extends Builder
     return $this;
   }
 
-  public function avg($column)
+  public function avg($column, $table = null)
   {
-    $column = new Column($column, 'avg');
+    $column = new Column($column, 'avg', $table);
     parent::$_build['select']->append($column);
 
     return $this;
+  }
+
+  public function __call($function, $arguments)
+  {
+    $functionparts = explode('_', $function);
+
+    $function = array_pop($functionparts);
+    $table    = implode('_', $functionparts);
+
+    if(method_exists($this, $function))
+    {
+      call_user_func(array($this, $function), $arguments[0], $table);
+    }
   }
 }

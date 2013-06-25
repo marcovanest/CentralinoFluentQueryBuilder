@@ -15,12 +15,10 @@ class General
 
   public static function table($table)
   {
-    static::$_table = $table;
-
     switch(self::$_connection->getDriverName())
     {
       case 'mysql':
-        return new Mysql\Builder();
+        return new Mysql\From($table);
     }
   }
 

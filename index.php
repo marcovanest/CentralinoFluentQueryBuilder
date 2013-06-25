@@ -4,70 +4,123 @@ include 'src/Bootstrap.php';
 $pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
-$fluent     = $connection->fluentQuery();
-$builder    = $fluent::table('wp_users');
 
-$builder->select(function($select){
-  $select->count('*');
-  $select->avg('*');
-  $select->columns(array('ID', 'ID1'));
-});
+/**
+ * Simple Select
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->get();
 
-$builder->join('wp_usermeta')->alias('metadata')->on('user_id', '=', 'wp_users.ID');
+/**
+ * Complex Select nested
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(function($builder){
+                      $builder->columns(array('ID')); //No table prefix
+                      $builder->columns(array('wp_users.ID')); //With table prefix
+                      $builder->wp_users_columns(array('user_status', 'display_name')); //No table prefix, but with function prefix
+                  })
+                  ->get();
 
-// $builder->join('wp_usermeta')
+/**
+ * Simple Join
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 'wp_users.ID')
+                  ->get();
 
-// ->nested(function($builder){
-//   $builder->on('1', '=', '1');
-//   $builder->on('2', '=', '2');
-// })
-// ->or_nested(function($builder){
-//   $builder->on('user_id', '=', 'wp_users.ID');
-//   $builder->on('user_id', '=', 'wp_users.ID');
-// })
-// ->nested(function($builder){
-//   $builder->on('1', '=', '1');
-//   $builder->on('2', '=', '2');
-// })->where_size('324');
+/**
+ * Complex Join nested
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->join('wp_usermeta')->nested(function($builder){
+                    $builder->on('wp_usermeta.user_id', '=', 'wp_users.ID');
+                    $builder->on('wp_usermeta.umeta_id', '=', 4);
+                  })
+                  ->get();
 
+/**
+ * Complex Join multiple nesting
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->join('wp_usermeta')
+                      ->nested(function($builder){
+                        $builder->on('wp_usermeta.user_id', '=', 'wp_users.ID');
+                      })
+                      ->or_nested(function($builder){
+                        $builder->on('wp_usermeta.user_id', '=', 7);
+                      })
+                  ->get();
 
-// $builder->where()->nested(function($where){
-//  $where->compare('user_id', '=', 5);
-//  $where->between('user_id', 1, 6);
+/**
+ * Simple Where
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->where('wp_users.user_id')->compare('=', 4)
+                  ->or_where('wp_users.user_id')->compare('=', 5)
+                  ->get();
 
+/**
+ * Complex Where nested
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->where()
+                    ->nested(function($builder){
+                      $builder->compare('wp_users.ID', '=', 5); //Compare condition
+                      $builder->between('wp_users.ID', 1, 6); //Between condition
+                    })
+                    ->or_nested(function($builder){
+                      $builder->isnull('wp_users.ID'); //IS NULL condition
+                      $builder->isnotnull('wp_users.ID'); //IS NOT NULL condition
+                    })
+                    //Logicaloperator AND is not prefixed
+                    ->nested(function($builder){
+                      $builder->like('wp_users.ID', 'test'); //LIKE condition
+                      $builder->notlike('wp_users.ID', 'test'); // NOT LIKE condition
+                    })
+                    //Logicaloperator OR is prefixed
+                    ->or_nested(function($builder){
+                      $builder->in('wp_users.ID', array(1,4)); //IN condition
+                      $builder->or_notin('wp_users.ID', array(1,4)); //NOTIN condition
+                    })
+                  ->get();
 
-//   $where->isnull('user_id');
-//   $where->isnotnull('user_id');
+/**
+ * LIMIT
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->limit(0, 5)
+                  ->get();
 
-//   $where->like('user_id', 'test');
-//   $where->notlike('user_id', 'test');
-// })
-// ->or_where()->nested(function($where){
-//     $where->or_in('user_id', array(1,4));
-//   $where->notin('user_id', array(1,4));
-// });
+/**
+ * ORDER BY
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->order('user_id', 'ASC')
+                  ->get();
 
-//$builder->where('user_id')->compare('=', 'wp_users.ID');
-//$builder->where('user_id')->between(7, 8);
-
-// $builder->where('user_id')->in(array(1,4));
-// $builder->where('user_id')->notin(array(1,4));
-
-// $builder->where('user_id')->isnull();
-// $builder->where('user_id')->isnotnull();
-
-// $builder->where('user_id')->like('5');
-// $builder->where('user_id')->notlike('5');
-
-// $builder->or_where('user_id')->notlike('5');
-
-// $builder->limit(0, 5);
-
-// $builder->order('user_id', 'ASC');
-
-// $builder->group('user_id');
-
-$s = $builder->get();
-
-echo '<pre>';
-print_r($s);
+/**
+ * GROUP BY
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->group('user_id')
+                  ->get();

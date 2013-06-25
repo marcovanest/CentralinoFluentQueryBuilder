@@ -28,32 +28,33 @@ class Parser extends Builder
       foreach (self::$_build['select'] as $column) 
       {
         $seperator = $total != $columncounter ? ', ' : '';
+        $table     = !empty($column->table) ? $column->table.'.' : '';
         $columncounter++;
 
         switch($column->type)
         {
           case 'normal':
-            $columns .= $column->name.$seperator;
+            $columns .= $table.$column->name.$seperator;
             break;
 
           case 'count':
-            $columns .= 'COUNT('.$column->name.') '.$seperator;
+            $columns .= 'COUNT('.$table.$column->name.') '.$seperator;
             break;
 
           case 'avg':
-            $columns .= 'AVG('.$column->name.') '.$seperator;
+            $columns .= 'AVG('.$table.$column->name.') '.$seperator;
             break;
 
           case 'sum':
-            $columns .= 'SUM('.$column->name.') '.$seperator;
+            $columns .= 'SUM('.$table.$column->name.') '.$seperator;
             break;
 
           case 'min':
-            $columns .= 'MIN('.$column->name.') '.$seperator;
+            $columns .= 'MIN('.$table.$column->name.') '.$seperator;
             break;
 
           case 'max':
-            $columns .= 'MAX('.$column->name.') '.$seperator;
+            $columns .= 'MAX('.$table.$column->name.') '.$seperator;
             break;
         }      
       }
@@ -64,9 +65,10 @@ class Parser extends Builder
 
   private function _parseFrom()
   {
-    if(!empty(static::$_table))
+    if(isset(parent::$_build['from']))
     {
-      return 'FROM '.static::$_table.' ';
+      $from = parent::$_build['from'];
+      return 'FROM '.$from->table. (!empty($from->alias) ? ' AS '.$from->alias : '' ).' ';
     }
   }
 

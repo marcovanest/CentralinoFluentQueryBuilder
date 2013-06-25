@@ -32,6 +32,8 @@ class Join extends Builder
     $condition->compare($arguments);
 
     parent::addCondition($condition);
+
+    return $this;
   }
 
   public function or_on()
@@ -42,6 +44,8 @@ class Join extends Builder
     $condition->compare($arguments);
 
     parent::addCondition($condition);
+
+    return $this;
   }
 
   public function alias($alias)
