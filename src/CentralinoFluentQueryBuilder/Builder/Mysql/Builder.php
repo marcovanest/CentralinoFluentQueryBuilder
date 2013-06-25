@@ -23,7 +23,7 @@ class Builder extends General
     
   }
 
-  public function select(array $fields)
+  public function select($fields = array())
   {
     return new Select($fields);
   }
@@ -150,7 +150,7 @@ class Builder extends General
   public function get()
   {
     $parser = new Parser();
-    $this->execute($parser->parse());
+    return $this->execute($parser->parse());
   }
 
   public function __call($name, $arguments)

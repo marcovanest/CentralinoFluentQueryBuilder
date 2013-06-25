@@ -20,10 +20,45 @@ class Parser extends Builder
 
   private function _parseSelect()
   {
+    $columns = '';
     if(isset(self::$_build['select']))
     {
-      $fields = implode(' , ', self::$_build['select']);
-      return 'SELECT '.$fields.' ';
+      $total = self::$_build['select']->count();
+      $columncounter = 1;
+      foreach (self::$_build['select'] as $column) 
+      {
+        $seperator = $total != $columncounter ? ', ' : '';
+        $columncounter++;
+
+        switch($column->type)
+        {
+          case 'normal':
+            $columns .= $column->name.$seperator;
+            break;
+
+          case 'count':
+            $columns .= 'COUNT('.$column->name.') '.$seperator;
+            break;
+
+          case 'avg':
+            $columns .= 'AVG('.$column->name.') '.$seperator;
+            break;
+
+          case 'sum':
+            $columns .= 'SUM('.$column->name.') '.$seperator;
+            break;
+
+          case 'min':
+            $columns .= 'MIN('.$column->name.') '.$seperator;
+            break;
+
+          case 'max':
+            $columns .= 'MAX('.$column->name.') '.$seperator;
+            break;
+        }      
+      }
+
+      return 'SELECT '.$columns.' ';
     }
   }
 
