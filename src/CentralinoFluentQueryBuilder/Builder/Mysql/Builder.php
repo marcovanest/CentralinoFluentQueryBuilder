@@ -45,12 +45,47 @@ class Builder extends General
 
   public function nested(\Closure $function)
   {
-    return $this->_handleNested($function, 'AND');
+    if($this instanceof Join || 
+        $this instanceof Where )  
+    {
+      return $this->_handleNested($function, 'AND');
+    }
   }
 
   public function or_nested(\Closure $function)
   {
-    return $this->_handleNested($function, 'OR');
+    if($this instanceof Join || 
+        $this instanceof Where )
+    {
+      return $this->_handleNested($function, 'OR');
+    }
+  }
+  
+  public function limit($offset, $amountofrows = null)
+  {
+    self::$_build['limit'] = compact('offset', 'amountofrows');
+
+    return $this;
+  }
+
+  public function order($columns, $direction = null)
+  {
+    $order = new Order($columns, $direction);
+
+    return $this;
+  }
+
+  public function group($column)
+  {
+    $order = new Group($column);
+
+    return $this;
+  }
+
+  public function get()
+  {
+    $parser = new Parser();
+    return $this->execute($parser->parse());
   }
 
   private function _handleNested($function, $logicaloperator)
@@ -124,38 +159,6 @@ class Builder extends General
         self::$_build[$this->_type][$this->_whereposition]->conditions->append($condition);
       }
     }     
-  }
-  
-  public function limit($offset, $amountofrows)
-  {
-    self::$_build['limit'] = compact('offset', 'amountofrows');
-
-    return $this;
-  }
-
-  public function order($column, $direction)
-  {
-    self::$_build['order'][] = compact('column', 'direction');
-
-    return $this;
-  }
-
-  public function group($column)
-  {
-    self::$_build['group'][] = compact('column');
-
-    return $this;
-  }
-
-  public function get()
-  {
-    $parser = new Parser();
-    return $this->execute($parser->parse());
-  }
-
-  public function __call($name, $arguments)
-  {
-    
   }
 }
 

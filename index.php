@@ -1,4 +1,6 @@
 <?php
+
+
 include 'src/Bootstrap.php';
 
 $pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
@@ -31,7 +33,16 @@ $stm     = $fluent::table('wp_users')
 $fluent  = $connection->fluentQuery();
 $stm     = $fluent::table('wp_users')
                   ->select(array('*'))
-                  ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 'wp_users.ID')
+                  ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
+                  ->get();
+
+/**
+ * Simple Join alias
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->join('wp_usermeta')->alias('META')->on('META.user_id', '=', 1)
                   ->get();
 
 /**
@@ -53,9 +64,11 @@ $fluent  = $connection->fluentQuery();
 $stm     = $fluent::table('wp_users')
                   ->select(array('*'))
                   ->join('wp_usermeta')
+                      //Logicaloperator AND is not prefixed
                       ->nested(function($builder){
                         $builder->on('wp_usermeta.user_id', '=', 'wp_users.ID');
                       })
+                      //Logicaloperator OR is not prefixed
                       ->or_nested(function($builder){
                         $builder->on('wp_usermeta.user_id', '=', 7);
                       })
@@ -107,8 +120,10 @@ $stm     = $fluent::table('wp_users')
                   ->limit(0, 5)
                   ->get();
 
+
+
 /**
- * ORDER BY
+ * Simple ORDER BY
  */
 $fluent  = $connection->fluentQuery();
 $stm     = $fluent::table('wp_users')
@@ -117,10 +132,35 @@ $stm     = $fluent::table('wp_users')
                   ->get();
 
 /**
- * GROUP BY
+ * Complex ORDER BY nested
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->order(function($builder){
+                    $builder->column('user_id', 'DESC');
+                    $builder->column('user_id2', 'DESC');
+                  })
+                  ->get();
+
+/**
+ * Simple GROUP BY
  */
 $fluent  = $connection->fluentQuery();
 $stm     = $fluent::table('wp_users')
                   ->select(array('*'))
                   ->group('user_id')
                   ->get();
+
+/**
+ * Complex GROUP BY nested
+ */
+$fluent  = $connection->fluentQuery();
+$stm     = $fluent::table('wp_users')
+                  ->select(array('*'))
+                  ->group(function($builder){
+                    $builder->column('user_id');
+                    $builder->column('user_id2');
+                  })
+                  ->get();
+

@@ -42,7 +42,6 @@ class General
 
   protected function execute($sql)
   {
-    $statement = self::$_connection->prepare($sql);
-    var_dump($statement);
+    return self::$_connection->prepare($sql);
   }
 }

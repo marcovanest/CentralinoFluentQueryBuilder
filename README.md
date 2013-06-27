@@ -9,7 +9,10 @@ More to come soon!
 
 Features still in progress:
   - Unions
-  - Full support for table and field aliasses
-  - Aggregate functions
+  - Insert
+  - Update 
+  - Delete 
+  - Subquery's
+  - Tests (PHPUnit)
 
-Example can be found inside the index.php.
+Examples can be found inside the index.php
