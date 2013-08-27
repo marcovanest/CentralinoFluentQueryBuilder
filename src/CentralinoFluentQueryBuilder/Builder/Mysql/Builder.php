@@ -1,8 +1,6 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-use CentralinoFluentQueryBuilder\Builder\General;
-
-class Builder extends General
+class Builder
 {
   private $_nested = false;
 
@@ -85,7 +83,7 @@ class Builder extends General
   public function get()
   {
     $parser = new Parser();
-    return $this->execute($parser->parse());
+    return $parser->parse();
   }
 
   private function _handleNested($function, $logicaloperator)

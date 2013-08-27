@@ -1,21 +1,19 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder;
+<?php namespace CentralinoFluentQueryBuilder\Builder; use PDO;
 
-use CentralinoFluentQueryBuilder\Connection;
-
-class General
+class Build
 {
-  private static $_connection;
+  private static $_pdo;
 
   protected static $_table;
 
-  public function __construct(Connection $connection)
+  public function __construct(PDO $pdo)
   {
-    self::$_connection = $connection;
+    self::$_pdo = $pdo;
   }
 
-  public static function table($table)
+  public function table($table)
   {
-    switch(self::$_connection->getDriverName())
+    switch(self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
     {
       case 'mysql':
         return new Mysql\From($table);
@@ -38,10 +36,5 @@ class General
     {
       throw new Exception("Invalid operator given", 1);
     }
-  }
-
-  protected function execute($sql)
-  {
-    return self::$_connection->prepare($sql);
   }
 }
