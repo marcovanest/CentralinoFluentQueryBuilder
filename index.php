@@ -1,9 +1,7 @@
 <?php
-
-
 include 'src/Bootstrap.php';
 
-$pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
+$pdo        = new PDO('mysql:host=127.0.0.1;dbname=lmoors', 'root', 'tar');
 $connection = new CentralinoFluentQueryBuilder\Connection($pdo);
 
 
@@ -119,8 +117,6 @@ $stm     = $fluent::table('wp_users')
                   ->select(array('*'))
                   ->limit(0, 5)
                   ->get();
-
-
 
 /**
  * Simple ORDER BY
