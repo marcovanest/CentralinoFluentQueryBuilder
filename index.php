@@ -1,54 +1,9 @@
 <?php
 include 'src/Bootstrap.php';
 
-$pdo        = new PDO('mysql:host=127.0.0.1;dbname=lmoors', 'root', 'tar');
+$pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 $build      = new CentralinoFluentQueryBuilder\Builder\Build($pdo);
 
-$stm     = $build->table('wp_users')
-                  ->insert(array(
-                      'user_login' => 'John Doe',
-                      'user_nicename' => 'JD',
-                    ))
-                  ->get();
-
-echo '<pre>'; print_r($stm); echo '</pre>';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-exit();
 $stm     = $build->table('wp_users')
                   ->select(function($builder){
                       $builder->columns(array('ID')); //No table prefix
@@ -153,7 +108,6 @@ $stm     = $build->table('wp_users')
                       $builder->or_notin('wp_users.ID', array(1,4)); //NOTIN condition
                     })
                   ->get();
-
 /**
  * LIMIT
  */

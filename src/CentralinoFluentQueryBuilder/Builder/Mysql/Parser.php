@@ -228,6 +228,13 @@ class Parser extends Builder
         $sql .= $column->getName().' BETWEEN '.$min.' AND '.$max.' ';
         break;
 
+     case 'notbetween':
+        $min = $arguments['min'];
+        $max = $arguments['max'];
+
+        $sql .= $column->getName().' NOT BETWEEN '.$min.' AND '.$max.' ';
+        break;
+
      case 'in':
         $list = $arguments['list'];
 
