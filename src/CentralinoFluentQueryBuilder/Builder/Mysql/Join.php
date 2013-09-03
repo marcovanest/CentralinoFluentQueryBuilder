@@ -12,16 +12,16 @@ class Join extends Builder
     $this->_type            = 'join';  
     $this->table            = $table;    
     $this->logicaloperator  = $logicaloperator; 
-    $this->conditions       = new \ArrayObject();
+    $this->conditions       = array();
 
-    $this->_joinposition    = isset(parent::$_build[$this->_type][$this->table]) ? parent::$_build[$this->_type][$this->table]->count() : 0;
+    $this->_joinposition    = isset(parent::$_build[$this->_type][$this->table]) ? count(parent::$_build[$this->_type][$this->table]) : 0;
     
     if(!isset(parent::$_build[$this->_type]))
     {
-      parent::$_build[$this->_type][$this->table] = new \ArrayObject();
+      parent::$_build[$this->_type][$this->table] = array();
     }
 
-    parent::$_build[$this->_type][$this->table]->append($this);
+    parent::$_build[$this->_type][$this->table][] = $this;
   }
 
   public function on()

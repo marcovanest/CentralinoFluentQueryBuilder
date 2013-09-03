@@ -1,6 +1,8 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\Clause;
 
-class Order extends Builder
+use CentralinoFluentQueryBuilder\Builder\Mysql;
+
+class Order extends Mysql\Builder
 {
   public $column;
   public $direction;
@@ -25,7 +27,7 @@ class Order extends Builder
 
   public function column($column, $direction)
   {      
-    $this->column    = new Column($column, 'normal');
+    $this->column    = new Mysql\Column($column, 'normal');
     $this->direction = $direction;
 
     parent::$_build['order']->append($this);

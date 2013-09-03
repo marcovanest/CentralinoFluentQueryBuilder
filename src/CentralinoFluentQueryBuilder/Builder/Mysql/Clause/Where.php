@@ -1,6 +1,8 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\Clause;
 
-class Where extends Builder
+use CentralinoFluentQueryBuilder\Builder\Mysql;
+
+class Where extends Mysql\Builder
 {
   private $_left;
   public  $logicaloperator;
@@ -25,7 +27,7 @@ class Where extends Builder
   {  
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('compare');
+    $condition = new Mysql\Condition('compare');
     $condition->compare($arguments);
 
     parent::addCondition($condition);
@@ -37,7 +39,7 @@ class Where extends Builder
   {  
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('compare', 'OR');
+    $condition = new Mysql\Condition('compare', 'OR');
     $condition->compare($arguments);
 
     parent::addCondition($condition);
@@ -49,7 +51,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('between');
+    $condition = new Mysql\Condition('between');
     $condition->range($arguments);
 
     parent::addCondition($condition);
@@ -61,7 +63,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('between', 'OR');
+    $condition = new Mysql\Condition('between', 'OR');
     $condition->range($arguments);
 
     parent::addCondition($condition);
@@ -73,7 +75,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('in');
+    $condition = new Mysql\Condition('in');
     $condition->comparelist($arguments);
 
     parent::addCondition($condition);
@@ -85,7 +87,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('in', 'OR');
+    $condition = new Mysql\Condition('in', 'OR');
     $condition->comparelist($arguments);
 
     parent::addCondition($condition);
@@ -97,7 +99,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('notin');
+    $condition = new Mysql\Condition('notin');
     $condition->comparelist($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -109,7 +111,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('notin', 'OR');
+    $condition = new Mysql\Condition('notin', 'OR');
     $condition->comparelist($arguments);
 
     parent::addCondition($condition);
@@ -121,7 +123,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('like');
+    $condition = new Mysql\Condition('like');
     $condition->contains($arguments);
 
     parent::addCondition($condition);
@@ -133,7 +135,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('like', 'OR');
+    $condition = new Mysql\Condition('like', 'OR');
     $condition->contains($arguments);
 
     parent::addCondition($condition);
@@ -145,7 +147,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('notlike');
+    $condition = new Mysql\Condition('notlike');
     $condition->contains($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -157,7 +159,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('notlike', 'OR');
+    $condition = new Mysql\Condition('notlike', 'OR');
     $condition->contains($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -169,7 +171,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('isnull');
+    $condition = new Mysql\Condition('isnull');
     $condition->isnull($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -181,7 +183,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('isnull', 'OR');
+    $condition = new Mysql\Condition('isnull', 'OR');
     $condition->isnull($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -193,7 +195,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('isnotnull');
+    $condition = new Mysql\Condition('isnotnull');
     $condition->isnull($arguments, 'NOT');
 
     parent::addCondition($condition);
@@ -205,7 +207,7 @@ class Where extends Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Condition('isnotnull', 'OR');
+    $condition = new Mysql\Condition('isnotnull', 'OR');
     $condition->isnull($arguments, 'NOT');
 
     parent::addCondition($condition);

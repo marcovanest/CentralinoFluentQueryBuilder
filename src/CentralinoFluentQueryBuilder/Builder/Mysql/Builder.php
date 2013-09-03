@@ -23,7 +23,12 @@ class Builder
 
   public function select($fields = array())
   {
-    return new Select($fields);
+    return new DMS\Select($fields);
+  }
+
+  public function insert($fields = array())
+  {
+    return new DMS\Insert($fields);
   }
 
   public function join($table)
@@ -33,18 +38,18 @@ class Builder
 
   public function where($table = null)
   {
-    return new Where($table);
+    return new Clause\Where($table);
   }
 
   public function or_where($table = null)
   {
-    return new Where($table, 'OR');
+    return new Clause\Where($table, 'OR');
   }
 
   public function nested(\Closure $function)
   {
     if($this instanceof Join || 
-        $this instanceof Where )  
+        $this instanceof Clause\Where )  
     {
       return $this->_handleNested($function, 'AND');
     }
@@ -53,7 +58,7 @@ class Builder
   public function or_nested(\Closure $function)
   {
     if($this instanceof Join || 
-        $this instanceof Where )
+        $this instanceof Clause\Where )
     {
       return $this->_handleNested($function, 'OR');
     }
@@ -68,14 +73,14 @@ class Builder
 
   public function order($columns, $direction = null)
   {
-    $order = new Order($columns, $direction);
+    $order = new Clause\Order($columns, $direction);
 
     return $this;
   }
 
   public function group($column)
   {
-    $order = new Group($column);
+    $order = new Clause\Group($column);
 
     return $this;
   }
@@ -94,12 +99,12 @@ class Builder
     {
       if($this instanceof Join)
       {
-        $this->_conditionposition = self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions->count();
+        $this->_conditionposition = count(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions);
         $this->_nestedoperators[$this->_joinposition][$this->_conditionposition] = $logicaloperator; 
       }
-      elseif($this instanceof Where)
+      elseif($this instanceof Clause\Where)
       {
-        $this->_conditionposition = self::$_build[$this->_type][$this->_whereposition]->conditions->count(); 
+        $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->conditions); 
         $this->_nestedoperators[$this->_whereposition][$this->_conditionposition] = $logicaloperator; 
       }
 
@@ -133,28 +138,28 @@ class Builder
       {
         if(!isset(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition]))
         {
-          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = new \ArrayObject();
+          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = array();
         }
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition]->append($condition);
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition][] = $condition;
       }
-      elseif ($this instanceof Where) 
+      elseif ($this instanceof Clause\Where) 
       {
         if(!isset(self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]))
         {
-          self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition] = new \ArrayObject();
+          self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition] = array();
         }
-        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]->append($condition);
+        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition][] = $condition;
       }
     }
     else
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions->append($condition);   
+        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[] = $condition;   
       }
-      elseif($this instanceof Where)
+      elseif($this instanceof Clause\Where)
       {
-        self::$_build[$this->_type][$this->_whereposition]->conditions->append($condition);
+        self::$_build[$this->_type][$this->_whereposition]->conditions[] = $condition;
       }
     }     
   }

@@ -10,8 +10,8 @@ class Parser extends Builder
   public function parse()
   {
     $sql = '';
-    $sql .= $this->_parseSelect();
-    $sql .= $this->_parseFrom();
+    $sql .= $this->_parseDMS();
+    $sql .= $this->_parseTarget();
     $sql .= $this->_parseJoins();
     $sql .= $this->_parseWheres();
     $sql .= $this->_parseLimit();
@@ -21,43 +21,45 @@ class Parser extends Builder
     return $sql;
   }
 
-  private function _parseSelect()
+  private function _parseDMS()
   {
     $columns = '';
     if(isset(self::$_build['select']))
     {
-      $total = self::$_build['select']->count();
-      $columncounter = 1;
-      foreach (self::$_build['select'] as $column) 
+      $selectcolumns  = self::$_build['select']->getColumns();
+      $total          = count($selectcolumns);
+      $columncounter  = 1;
+
+      foreach ($selectcolumns as $column) 
       {
         $seperator = $total != $columncounter ? ', ' : '';
         $table     = !empty($column->table) ? $column->table.'.' : '';
         $columncounter++;
 
-        switch($column->type)
+        switch($column->getType())
         {
           case 'normal':
-            $columns .= $table.$column->name.$seperator;
+            $columns .= $table.$column->getName().$seperator;
             break;
 
           case 'count':
-            $columns .= 'COUNT('.$table.$column->name.') '.$seperator;
+            $columns .= 'COUNT('.$table.$column->getName().') '.$seperator;
             break;
 
           case 'avg':
-            $columns .= 'AVG('.$table.$column->name.') '.$seperator;
+            $columns .= 'AVG('.$table.$column->getName().') '.$seperator;
             break;
 
           case 'sum':
-            $columns .= 'SUM('.$table.$column->name.') '.$seperator;
+            $columns .= 'SUM('.$table.$column->getName().') '.$seperator;
             break;
 
           case 'min':
-            $columns .= 'MIN('.$table.$column->name.') '.$seperator;
+            $columns .= 'MIN('.$table.$column->getName().') '.$seperator;
             break;
 
           case 'max':
-            $columns .= 'MAX('.$table.$column->name.') '.$seperator;
+            $columns .= 'MAX('.$table.$column->getName().') '.$seperator;
             break;
         }      
       }
@@ -66,12 +68,12 @@ class Parser extends Builder
     }
   }
 
-  private function _parseFrom()
+  private function _parseTarget()
   {
-    if(isset(parent::$_build['from']))
+    if(isset(parent::$_build['target']))
     {
-      $from = parent::$_build['from'];
-      return 'FROM '.$from->table. (!empty($from->alias) ? ' AS '.$from->alias : '' ).' ';
+      $target = parent::$_build['target'];
+      return 'FROM '.$target->table. (!empty($target->alias) ? ' AS '.$target->alias : '' ).' ';
     }
   }
 
@@ -112,7 +114,7 @@ class Parser extends Builder
           $sql .= $where->logicaloperator.' ';
         }
 
-        if($where instanceof Where)
+        if($where instanceof Clause\Where)
         {
           $sql .= $this->_parseConditions($where->conditions, $where->_nestedoperators[$whereposition]);          
         }
@@ -179,7 +181,7 @@ class Parser extends Builder
   {
     foreach ($conditions as $conditionposition => $condition) 
     {
-      if($condition instanceof \ArrayObject)
+      if(is_array($condition))
       {
         $sql .= ($conditionposition != 0 ? $logicaloperators[$conditionposition] : '').' ( ';
         $this->_parseConditions($condition, null, $sql, true);
@@ -204,65 +206,67 @@ class Parser extends Builder
     $sql = '';
     if($conditionposition !== 0)
     {
-      $sql .= $condition->logicaloperator.' ';
+      $sql .= $condition->getLogicalOperator().' ';
     }
 
-    switch ($condition->type) 
+    $arguments = $condition->getArguments();
+
+    switch ($condition->getType()) 
     {
       case 'compare':
-        $column   = $condition->arguments['column'];
-        $operator = $condition->arguments['operator'];
-        $right    = $condition->arguments['right'];
+        $column   = $arguments['column'];
+        $operator = $arguments['operator'];
+        $right    = $arguments['right'];
 
-        $sql .= $column->name.' '.$operator.' '.$right.' ';
+        $sql .= $column->getName().' '.$operator.' '.$right.' ';
         break;
 
      case 'between':
-        $column     = $condition->arguments['column'];
-        $min        = $condition->arguments['min'];
-        $max        = $condition->arguments['max'];
+        $column     = $arguments['column'];
+        $min        = $arguments['min'];
+        $max        = $arguments['max'];
 
-        $sql .= $column->name.' BETWEEN '.$min.' AND '.$max.' ';
+        $sql .= $column->getName().' BETWEEN '.$min.' AND '.$max.' ';
         break;
 
      case 'in':
-        $column     = $condition->arguments['column'];
-        $list       = $condition->arguments['list'];
+        $column     = $arguments['column'];
+        $list       = $arguments['list'];
 
-        $sql .= $column->name.' IN ('.implode(', ', $list).') '; 
+        $sql .= $column->getName().' IN ('.implode(', ', $list).') '; 
         break;
 
       case 'notin':
-        $column     = $condition->arguments['column'];
-        $list       = $condition->arguments['list'];
+        $column     = $arguments['column'];
+        $list       = $arguments['list'];
 
-        $sql .= $column->name.' NOT IN ('.implode(', ', $list).') '; 
+        $sql .= $column->getName().' NOT IN ('.implode(', ', $list).') '; 
         break;
 
       case 'isnull':
-        $column     = $condition->arguments['column'];
+        $column     = $arguments['column'];
 
-        $sql .= $column->name.' IS NULL '; 
+        $sql .= $column->getName().' IS NULL '; 
         break;
 
       case 'isnotnull':
-        $column     = $condition->arguments['column'];
+        $column     = $arguments['column'];
 
-        $sql .= $column->name.' IS NOT NULL '; 
+        $sql .= $column->getName().' IS NOT NULL '; 
         break;
       
       case 'like':
-        $column     = $condition->arguments['column'];
-        $contains   = $condition->arguments['contains'];
+        $column     = $arguments['column'];
+        $contains   = $arguments['contains'];
 
-        $sql .= $column->name.' LIKE ("%'.$contains.'%") '; 
+        $sql .= $column->getName().' LIKE ("%'.$contains.'%") '; 
         break;
       
       case 'notlike':
-        $column     = $condition->arguments['column'];
-        $contains   = $condition->arguments['contains'];
+        $column     = $arguments['column'];
+        $contains   = $arguments['contains'];
 
-        $sql .= $column->name.' NOT LIKE ("%'.$contains.'%") '; 
+        $sql .= $column->getName().' NOT LIKE ("%'.$contains.'%") '; 
         break;
 
       default:

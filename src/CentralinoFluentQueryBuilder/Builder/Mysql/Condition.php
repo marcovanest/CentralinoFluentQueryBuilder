@@ -2,46 +2,81 @@
 
 class Condition
 {
-  public $arguments = array();
+  private $_arguments = array();
 
-  public $type;
+  private $_type;
 
-  public $logicaloperator;
+  private $_logicaloperator;
 
   public function __construct($type, $logicaloperator = 'AND')
   {
-    $this->type             = $type;
-    $this->logicaloperator  = $logicaloperator;
+    $this->_type             = $type;
+    $this->_logicaloperator  = $logicaloperator;
   } 
+
+  public function getArguments()
+  {
+    return $this->_arguments;
+  }
+
+  public function getType()
+  {
+    return $this->_type;
+  }
+
+  public function getLogicalOperator()
+  {
+    return $this->_logicaloperator;
+  }
 
   public function compare($arguments)
   {
-    $this->arguments['column']   = new Column($arguments[0], 'normal');
-    $this->arguments['operator'] = $arguments[1];
-    $this->arguments['right']    = $arguments[2];
+    $columnobject = new Column();
+    $columnobject->setName($arguments[0]);
+    $columnobject->setType('normal');
+
+    $this->_arguments['column']   = $columnobject;
+    $this->_arguments['operator'] = $arguments[1];
+    $this->_arguments['right']    = $arguments[2];
   }
 
   public function comparelist($arguments)
   {
-    $this->arguments['column']  = new Column($arguments[0], 'normal');
-    $this->arguments['list']    = $arguments[1];
+    $columnobject = new Column();
+    $columnobject->setName($arguments[0]);
+    $columnobject->setType('normal');
+
+    $this->_arguments['column']  = $columnobject;
+    $this->_arguments['list']    = $arguments[1];
   }
 
   public function range($arguments)
   {
-    $this->arguments['column']  = new Column($arguments[0], 'normal');
-    $this->arguments['min']     = $arguments[1];
-    $this->arguments['max']     = $arguments[2];
+    $columnobject = new Column();
+    $columnobject->setName($arguments[0]);
+    $columnobject->setType('normal');
+
+    $this->_arguments['column']  = $columnobject;
+    $this->_arguments['min']     = $arguments[1];
+    $this->_arguments['max']     = $arguments[2];
   }
 
   public function contains($arguments)
   {
-    $this->arguments['column']   = new Column($arguments[0], 'normal');
-    $this->arguments['contains'] = $arguments[1];
+    $columnobject = new Column();
+    $columnobject->setName($arguments[0]);
+    $columnobject->setType('normal');
+
+    $this->_arguments['column']   = $columnobject;
+    $this->_arguments['contains'] = $arguments[1];
   }
 
   public function isnull($arguments)
   {
-    $this->arguments['column'] = new Column($arguments[0], 'normal');
+    $columnobject = new Column();
+    $columnobject->setName($arguments[0]);
+    $columnobject->setType('normal');
+
+    $this->_arguments['column']   = $columnobject;
   }
 }

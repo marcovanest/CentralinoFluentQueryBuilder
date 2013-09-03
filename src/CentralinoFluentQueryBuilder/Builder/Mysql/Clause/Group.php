@@ -1,6 +1,8 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\Clause;
 
-class Group extends Builder
+use CentralinoFluentQueryBuilder\Builder\Mysql;
+
+class Group extends Mysql\Builder
 {
   public $column;
 
@@ -24,7 +26,7 @@ class Group extends Builder
 
   public function column($column)
   {      
-    $this->column = new Column($column, 'normal');
+    $this->column = new Mysql\Column($column, 'normal');
 
     parent::$_build['group']->append($this);
    

@@ -1,6 +1,6 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class From extends Builder
+class Target extends Builder
 {
   public $table;
   public $alias;
@@ -11,7 +11,7 @@ class From extends Builder
 
     parent::$_build = '';
 
-    parent::$_build['from'] = $this;
+    parent::$_build['target'] = $this;
   }
 
   public function alias($alias)
