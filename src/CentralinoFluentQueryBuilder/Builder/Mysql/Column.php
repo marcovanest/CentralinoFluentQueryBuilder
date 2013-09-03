@@ -8,10 +8,7 @@ class Column
   private $_table;
   private $_value;
 
-  public function __construct()
-  {
-
-  } 
+  public function __construct() { } 
 
   /**
    * return the column name

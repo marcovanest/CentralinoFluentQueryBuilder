@@ -154,7 +154,7 @@ class Parser extends Builder
     }    
   }
 
- private function _parseGroup()
+  private function _parseGroup()
   {
     if(isset(self::$_build['group']))
     {
@@ -210,11 +210,11 @@ class Parser extends Builder
     }
 
     $arguments = $condition->getArguments();
+    $column    = $arguments['column'];
 
     switch ($condition->getType()) 
     {
       case 'compare':
-        $column   = $arguments['column'];
         $operator = $arguments['operator'];
         $right    = $arguments['right'];
 
@@ -222,49 +222,40 @@ class Parser extends Builder
         break;
 
      case 'between':
-        $column     = $arguments['column'];
-        $min        = $arguments['min'];
-        $max        = $arguments['max'];
+        $min = $arguments['min'];
+        $max = $arguments['max'];
 
         $sql .= $column->getName().' BETWEEN '.$min.' AND '.$max.' ';
         break;
 
      case 'in':
-        $column     = $arguments['column'];
-        $list       = $arguments['list'];
+        $list = $arguments['list'];
 
         $sql .= $column->getName().' IN ('.implode(', ', $list).') '; 
         break;
 
       case 'notin':
-        $column     = $arguments['column'];
-        $list       = $arguments['list'];
+        $list = $arguments['list'];
 
         $sql .= $column->getName().' NOT IN ('.implode(', ', $list).') '; 
         break;
 
       case 'isnull':
-        $column     = $arguments['column'];
-
         $sql .= $column->getName().' IS NULL '; 
         break;
 
       case 'isnotnull':
-        $column     = $arguments['column'];
-
         $sql .= $column->getName().' IS NOT NULL '; 
         break;
       
       case 'like':
-        $column     = $arguments['column'];
-        $contains   = $arguments['contains'];
+        $contains = $arguments['contains'];
 
         $sql .= $column->getName().' LIKE ("%'.$contains.'%") '; 
         break;
       
       case 'notlike':
-        $column     = $arguments['column'];
-        $contains   = $arguments['contains'];
+        $contains = $arguments['contains'];
 
         $sql .= $column->getName().' NOT LIKE ("%'.$contains.'%") '; 
         break;

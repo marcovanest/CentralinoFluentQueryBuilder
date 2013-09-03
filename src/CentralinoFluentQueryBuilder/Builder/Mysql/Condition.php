@@ -14,21 +14,33 @@ class Condition
     $this->_logicaloperator  = $logicaloperator;
   } 
 
+  /**
+   * get the arguments
+   * @return [type]
+   */
   public function getArguments()
   {
     return $this->_arguments;
   }
 
+  /**
+   * get the type
+   * @return [type]
+   */
   public function getType()
   {
     return $this->_type;
   }
 
+  /**
+   * get the logicaloperator
+   * @return [type]
+   */
   public function getLogicalOperator()
   {
     return $this->_logicaloperator;
   }
-
+  
   public function compare($arguments)
   {
     $columnobject = new Column();

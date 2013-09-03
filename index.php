@@ -1,8 +1,62 @@
 <?php
 include 'src/Bootstrap.php';
 
-$pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
+$pdo        = new PDO('mysql:host=127.0.0.1;dbname=lmoors', 'root', 'tar');
 $build      = new CentralinoFluentQueryBuilder\Builder\Build($pdo);
+
+$stm     = $build->table('wp_users')
+                  ->insert(array(
+                      'user_login' => 'John Doe',
+                      'user_nicename' => 'JD',
+                    ))
+                  ->get();
+
+echo '<pre>'; print_r($stm); echo '</pre>';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit();
+$stm     = $build->table('wp_users')
+                  ->select(function($builder){
+                      $builder->columns(array('ID')); //No table prefix
+                      $builder->columns(array('wp_users.ID')); //With table prefix
+                      $builder->wp_users_columns(array('user_status', 'display_name')); //No table prefix, but with function prefix
+                  })
+                  ->join('wp_usermeta')->alias('META')->on('META.user_id', '=', 1)
+                  ->get();
 
 /**
  * Simple Select
