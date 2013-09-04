@@ -1,14 +1,16 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\DMS;
 
+use CentralinoFluentQueryBuilder\Builder\General;
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
 use CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Select extends Mysql\Builder
+class Select extends Mysql\Syntax implements Interfaces\Select
 {
   private $_columns = array();
 
   public function __construct($columns)
   {
-    parent::$_build['select'] = $this;
+    parent::$_build['dms'] = $this;
 
     if(is_array($columns))
     {
@@ -32,7 +34,7 @@ class Select extends Mysql\Builder
   {
     foreach ($columns as $columnname) 
     {
-      $columnobject = new Mysql\Column();
+      $columnobject = new General\Column();
       $columnobject->setName($columnname);
       $columnobject->setType('normal');
       $columnobject->setTable($table);
@@ -45,7 +47,7 @@ class Select extends Mysql\Builder
 
   public function count($columnname, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('count');
     $columnobject->setTable($table);
@@ -57,7 +59,7 @@ class Select extends Mysql\Builder
 
   public function countdistinct($column, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('countdistinct');
     $columnobject->setTable($table);
@@ -69,7 +71,7 @@ class Select extends Mysql\Builder
 
   public function sum($columnname, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('sum');
     $columnobject->setTable($table);
@@ -81,7 +83,7 @@ class Select extends Mysql\Builder
 
   public function min($columnname, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('min');
     $columnobject->setTable($table);
@@ -93,7 +95,7 @@ class Select extends Mysql\Builder
 
   public function max($columnname, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('max');
     $columnobject->setTable($table);
@@ -105,7 +107,7 @@ class Select extends Mysql\Builder
 
   public function avg($columnname, $table = null)
   {
-    $columnobject = new Mysql\Column();
+    $columnobject = new General\Column();
     $columnobject->setName($columnname);
     $columnobject->setType('avg');
     $columnobject->setTable($table);

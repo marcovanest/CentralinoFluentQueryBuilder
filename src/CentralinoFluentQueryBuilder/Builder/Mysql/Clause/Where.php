@@ -1,13 +1,16 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\Clause;
 
+use CentralinoFluentQueryBuilder\Builder\General;
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
 use CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Where extends Mysql\Builder
+class Where extends Mysql\Syntax implements Interfaces\Where
 {
   private $_left;
   private $_logicaloperator;
   private $_conditions;
   private $_whereposition;
+  private $_nestedoperators = array();
 
   public function __construct($left, $logicaloperator = 'AND')
   { 
@@ -57,6 +60,16 @@ class Where extends Mysql\Builder
   }
 
   /**
+   * return the nested operators
+   * 
+   * @return array
+   */
+  public function getNestedOperators()
+  {
+    return $this->_nestedoperators;
+  }
+
+  /**
    * Comparison with operators
    *
    * Logical operator: AND
@@ -67,7 +80,7 @@ class Where extends Mysql\Builder
   {  
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->compare($arguments);
 
     $this->_addCondition($condition);
@@ -86,7 +99,7 @@ class Where extends Mysql\Builder
   {  
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->compare($arguments);
 
     $this->_addCondition($condition);
@@ -105,7 +118,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->range($arguments);
 
     $this->_addCondition($condition);
@@ -124,7 +137,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->range($arguments);
 
     $this->_addCondition($condition);
@@ -145,7 +158,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->comparelist($arguments);
 
     $this->_addCondition($condition);
@@ -166,7 +179,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->comparelist($arguments);
 
     $this->_addCondition($condition);
@@ -187,7 +200,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->comparelist($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -208,7 +221,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->comparelist($arguments);
 
     $this->_addCondition($condition);
@@ -229,7 +242,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->contains($arguments);
 
     $this->_addCondition($condition);
@@ -250,7 +263,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->contains($arguments);
 
     $this->_addCondition($condition);
@@ -271,7 +284,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->contains($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -292,7 +305,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->contains($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -313,7 +326,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->isnull($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -334,7 +347,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->isnull($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -355,7 +368,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition();
+    $condition = new General\Condition();
     $condition->isnull($arguments, 'NOT');
 
     $this->_addCondition($condition);
@@ -376,7 +389,7 @@ class Where extends Mysql\Builder
   {
     $arguments = $this->prepareArguments($this->_left, func_get_args());
 
-    $condition = new Mysql\Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->isnull($arguments, 'NOT');
 
     $this->_addCondition($condition);

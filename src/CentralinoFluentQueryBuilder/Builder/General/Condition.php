@@ -1,4 +1,4 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\General;
 
 class Condition
 {

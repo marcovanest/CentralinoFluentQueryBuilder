@@ -1,6 +1,6 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Target extends Builder
+class Target extends Syntax
 {
   private $_table;
   private $_alias;
@@ -8,10 +8,6 @@ class Target extends Builder
   public function __construct($table)
   {
     $this->_table = $table;
-
-    parent::$_build = '';
-
-    parent::$_build['target'] = $this;
   }
 
   /**

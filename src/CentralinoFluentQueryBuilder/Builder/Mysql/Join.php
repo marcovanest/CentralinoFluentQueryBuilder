@@ -1,18 +1,21 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Join extends Builder
+use CentralinoFluentQueryBuilder\Builder\General;
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
+
+class Join extends Syntax implements Interfaces\Join
 {
   private $_table;
-  private $_conditions;
+  private $_conditions = array();
   private $_alias;
   private $_joinposition;
   private $_type;
+  private $_nestedoperators = array();
 
   public function __construct($table, $type = 'inner')
   {
     $this->_type          = $type;  
     $this->_table         = $table;    
-    $this->_conditions    = array();
     $this->_joinposition  = isset(parent::$_build['join'][$this->_table]) ? count(parent::$_build['join'][$this->_table]) : 0;
 
     if(!isset(parent::$_build['join']))
@@ -64,6 +67,16 @@ class Join extends Builder
   }
 
   /**
+   * return the nested operators
+   * 
+   * @return array
+   */
+  public function getNestedOperators()
+  {
+    return $this->_nestedoperators;
+  }
+
+  /**
    * return the type
    *
    * possible values
@@ -94,7 +107,7 @@ class Join extends Builder
   {
     $arguments  = func_get_args();
 
-    $condition = new Condition();
+    $condition = new General\Condition();
     $condition->compare($arguments);
 
     $this->_addCondition($condition);
@@ -118,7 +131,7 @@ class Join extends Builder
   {
     $arguments  = func_get_args();
 
-    $condition = new Condition('OR');
+    $condition = new General\Condition('OR');
     $condition->compare($arguments);
 
     $this->_addCondition($condition);

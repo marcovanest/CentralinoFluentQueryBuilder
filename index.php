@@ -4,6 +4,17 @@ include 'src/Bootstrap.php';
 $pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 $build      = new CentralinoFluentQueryBuilder\Builder\Build($pdo);
 
+// $stm    = $build->table('wp_users')
+//                   ->insert(array('wp_name' => 'Marco van Est'))
+//                   ->get();
+
+$stm     = $build->table('wp_users')
+                  ->select(array('*'))
+                  ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
+                  ->get();
+                  ;
+
+
 /**
  * Simple Select
  */
@@ -99,6 +110,7 @@ $stm     = $build->table('wp_users')
                       $builder->or_notin('wp_users.ID', array(1,4)); //NOTIN condition
                     })
                   ->get();
+
 /**
  * LIMIT
  */

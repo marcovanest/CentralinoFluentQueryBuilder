@@ -1,13 +1,13 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder\General;
 
 class Column
 {
   private $_name;
-  private $_type;
+  private $_type = 'normal';
   private $_alias;
   private $_table;
   private $_value;
-  private $_direction;
+  private $_direction = 'ASC';
 
   public function __construct() { } 
 

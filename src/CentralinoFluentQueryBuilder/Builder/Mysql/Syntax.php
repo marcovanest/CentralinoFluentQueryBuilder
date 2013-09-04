@@ -1,6 +1,9 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Builder
+use CentralinoFluentQueryBuilder\Builder;
+use CentralinoFluentQueryBuilder\Builder\Mysql;
+
+class Syntax 
 {
   protected $_nested = false;
 
@@ -8,11 +11,16 @@ class Builder
 
   protected $_conditionposition;
 
-  protected $_nestedoperators;
-
   public function __construct()
   {
-    
+    self::$_build = '';
+  }
+
+  public function target($table)
+  {    
+    self::$_build['target'] = new Target($table);
+
+    return $this;
   }
 
   public function select($fields = array())
@@ -27,7 +35,9 @@ class Builder
 
   public function join($table)
   {
-    return new Join($table);
+    $join = new Join($table);
+
+    return $join;
   }
 
   public function inner_join($table)
@@ -58,7 +68,7 @@ class Builder
   public function nested(\Closure $function)
   {
     if($this instanceof Join || 
-        $this instanceof Clause\Where )  
+        $this instanceof Mysql\Clause\Where )  
     {
       return $this->_handleNestedConditions($function, 'AND');
     }
@@ -67,7 +77,7 @@ class Builder
   public function or_nested(\Closure $function)
   {
     if($this instanceof Join || 
-        $this instanceof Clause\Where )
+        $this instanceof Mysql\Clause\Where )
     {
       return $this->_handleNestedConditions($function, 'OR');
     }
@@ -75,28 +85,28 @@ class Builder
   
   public function limit($offset, $amountofrows = null)
   {
-    $limit = new Clause\Limit($offset, $amountofrows);
+    $limit = new Mysql\Clause\Limit($offset, $amountofrows);
 
     return $this;
   }
 
   public function order($columns, $direction = null)
   {
-    $order = new Clause\Order($columns, $direction);
+    $order = new Mysql\Clause\Order($columns, $direction);
 
     return $this;
   }
 
   public function group($column)
   {
-    $order = new Clause\Group($column);
+    $order = new Mysql\Clause\Group($column);
 
     return $this;
   }
 
   public function get()
   {
-    $parser = new Parser();
+    $parser = new Builder\Parser(self::$_build);
     return $parser->parse();
   }
 

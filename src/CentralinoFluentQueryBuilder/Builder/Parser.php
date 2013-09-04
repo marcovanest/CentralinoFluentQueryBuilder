@@ -1,17 +1,20 @@
-<?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
+<?php namespace CentralinoFluentQueryBuilder\Builder;
 
-class Parser extends Builder
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
+
+class Parser
 {
-  public function __construct()
+  private $_build;
+
+  public function __construct($build)
   {
-    
+    $this->_build = $build;
   }
 
   public function parse()
   {
     $sql = '';
     $sql .= $this->_parseDMS();
-    $sql .= $this->_parseTarget();
     $sql .= $this->_parseJoins();
     $sql .= $this->_parseWheres();
     $sql .= $this->_parseLimit();
@@ -23,73 +26,98 @@ class Parser extends Builder
 
   private function _parseDMS()
   {
-    $columns = '';
-    if(isset(self::$_build['select']))
+    $dms = isset($this->_build['dms']) ? $this->_build['dms'] : null ;
+
+    if( ! is_null($dms) )
     {
-      $selectcolumns  = self::$_build['select']->getColumns();
-      $total          = count($selectcolumns);
-      $columncounter  = 1;
-
-      foreach ($selectcolumns as $column) 
+      if($dms instanceof Interfaces\Select)
       {
-        $seperator = $total != $columncounter ? ', ' : '';
-        $table     = ! empty($column->table) ? $column->table . '.' : '';
-        $columncounter++;
-
-        switch($column->getType())
-        {
-          case 'normal':
-            $columns .= $table . $column->getName() . $seperator;
-            break;
-
-          case 'count':
-            $columns .= 'COUNT(' . $table . $column->getName() . ') ' . $seperator;
-            break;
-
-          case 'avg':
-            $columns .= 'AVG(' . $table . $column->getName() . ') ' . $seperator;
-            break;
-
-          case 'sum':
-            $columns .= 'SUM(' . $table.$column->getName().') ' .$seperator;
-            break;
-
-          case 'min':
-            $columns .= 'MIN(' . $table . $column->getName() . ') ' . $seperator;
-            break;
-
-          case 'max':
-            $columns .= 'MAX(' . $table . $column->getName() . ') ' . $seperator;
-            break;
-        }      
+        return $this->_parseSelect($dms);
       }
-
-      return 'SELECT ' . $columns . ' ';
+      elseif($dms instanceof Interfaces\Insert)
+      {
+        return $this->_parseInsert($dms);
+      }
     }
   }
 
-  private function _parseTarget()
+  private function _parseSelect($dms)
   {
-    if(isset(parent::$_build['target']))
+    $columns        = '';
+    $selectcolumns  = $dms->getColumns();
+    $total          = count($selectcolumns);
+    $columncounter  = 1;
+
+    foreach ($selectcolumns as $column) 
     {
-      $target = parent::$_build['target'];
+      $seperator = $total != $columncounter ? ', ' : '';
+      $table     = ! empty($column->table) ? $column->table . '.' : '';
+      $columncounter++;
 
-      $table = $target->getTable();
-      $alias = $target->getAlias();
+      switch($column->getType())
+      {
+        case 'normal':
+          $columns .= $table . $column->getName() . $seperator;
+          break;
 
-      return 'FROM ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
+        case 'count':
+          $columns .= 'COUNT(' . $table . $column->getName() . ') ' . $seperator;
+          break;
+
+        case 'avg':
+          $columns .= 'AVG(' . $table . $column->getName() . ') ' . $seperator;
+          break;
+
+        case 'sum':
+          $columns .= 'SUM(' . $table.$column->getName().') ' .$seperator;
+          break;
+
+        case 'min':
+          $columns .= 'MIN(' . $table . $column->getName() . ') ' . $seperator;
+          break;
+
+        case 'max':
+          $columns .= 'MAX(' . $table . $column->getName() . ') ' . $seperator;
+          break;
+      }      
     }
+
+    $target = $this->_build['target'];
+    $table  = $target->getTable();
+    $alias  = $target->getAlias();
+
+    return 'SELECT ' . $columns . ' FROM ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
+  }
+
+  private function _parseInsert($dms)
+  {
+    $insertcolumns  = $dms->getColumns();
+
+    $columns = array();
+    $values  = array();
+
+    foreach ($insertcolumns as $column) 
+    {
+      $columns[] = $column->getName();
+      $values[]  = $column->getValue();
+    }
+
+    $target = $this->_build['target'];
+    $table  = $target->getTable();
+    $alias  = $target->getAlias();
+
+    return 'INSERT INTO ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
   }
 
   private function _parseJoins()
   {
     $sql = '';
 
-    if(isset(self::$_build['join']))
+    if(isset($this->_build['join']))
     {
-      $tables = array_keys(self::$_build['join']);
+      $tables = array_keys($this->_build['join']);
 
-      foreach (self::$_build['join'] as $table => $joins) 
+      foreach ($this->_build['join'] as $table => $joins) 
       {
         foreach ($joins as $joinposition => $join) 
         {
@@ -98,11 +126,13 @@ class Parser extends Builder
 
           $sql .= $type . ' JOIN ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ON ';
 
-          if($join instanceof Join)
+          if($join instanceof Interfaces\Join)
           {
-            $conditions = $join->getConditions();
-            
-            $sql .= $this->_parseConditions($conditions, $join->_nestedoperators[$joinposition]);
+            $conditions      = $join->getConditions();
+            $nestedoperators = $join->getNestedOperators();
+            $logicaloperator = isset($nestedoperators[$joinposition]) ? $nestedoperators[$joinposition] : null;
+
+            $sql .= $this->_parseConditions($conditions, $logicaloperator);
           }
         }
       }
@@ -113,21 +143,24 @@ class Parser extends Builder
 
   private function _parseWheres()
   {
-    if(isset(self::$_build['where']))
+    if(isset($this->_build['where']))
     {
       $sql = 'WHERE ';
-      foreach (self::$_build['where'] as $whereposition => $where) 
+      foreach ($this->_build['where'] as $whereposition => $where) 
       {
         if($whereposition !== 0)
         {
           $sql .= $where->getLogicalOperator() . ' ';
         }
 
-        if($where instanceof Clause\Where)
+        if($where instanceof Interfaces\Where)
         {
-          $conditions = $where->getConditions();
+          $conditions      = $where->getConditions();
+          $nestedoperators = $where->getNestedOperators();
+          $logicaloperator = isset($nestedoperators[$whereposition]) ? $nestedoperators[$whereposition] : null;
 
-          $sql .= $this->_parseConditions($conditions, $where->_nestedoperators[$whereposition]);          
+
+          $sql .= $this->_parseConditions($conditions, $logicaloperator);          
         }
       }
       return $sql;
@@ -136,9 +169,9 @@ class Parser extends Builder
 
   private function _parseLimit()
   {
-    if(isset(self::$_build['limit']))
+    if(isset($this->_build['limit']))
     {
-      $limit = self::$_build['limit'];
+      $limit = $this->_build['limit'];
 
       $offset = $limit->getOffset();
       $amountofrows = $limit->getAmountOfRows();
@@ -150,15 +183,15 @@ class Parser extends Builder
 
   private function _parseOrder()
   {
-    if(isset(self::$_build['order']))
+    if(isset($this->_build['order']))
     {
-      $total         = count(self::$_build['order']);
+      $total         = count($this->_build['order']);
       $columncounter = 1;
 
       $sql = 'ORDER BY ';
-      foreach (self::$_build['order'] as $orderposition => $order) 
+      foreach ($this->_build['order'] as $orderposition => $order) 
       {
-        if($order instanceof Clause\Order)
+        if($order instanceof Interfaces\Order)
         {
           $column     = $order->getColumn()->getName();
           $direction  = $order->getDirection();
@@ -175,16 +208,16 @@ class Parser extends Builder
 
   private function _parseGroup()
   {
-    if(isset(self::$_build['group']))
+    if(isset($this->_build['group']))
     {
-      $total         = count(self::$_build['group']);
+      $total         = count($this->_build['group']);
       $columncounter = 1;
 
       $sql = 'GROUP BY ';
 
-      foreach (self::$_build['group'] as $groupposition => $group) 
+      foreach ($this->_build['group'] as $groupposition => $group) 
       {
-        if($group instanceof Clause\Group)
+        if($group instanceof Interfaces\Group)
         {
           $column = $group->getColumn()->getName();
 
@@ -208,7 +241,7 @@ class Parser extends Builder
         $this->_parseConditions($condition, null, $sql, true);
       }
       
-      if($condition instanceof Condition)
+      if($condition instanceof General\Condition)
       {
         $sql .= $this->_parseCondition($condition, $conditionposition);
       }
@@ -222,7 +255,7 @@ class Parser extends Builder
     return $sql;
   }
 
-  private function _parseCondition(Condition $condition, $conditionposition)
+  private function _parseCondition(General\Condition $condition, $conditionposition)
   {
     $sql = '';
     if($conditionposition !== 0)

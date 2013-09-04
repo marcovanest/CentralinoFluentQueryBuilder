@@ -2,14 +2,13 @@
 
 use CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Limit extends Mysql\Builder
+class Limit extends Mysql\Syntax
 {
   private $_offset;
   private $_amountofrows;
 
   public function __construct($offset, $amountofrows = null)
   {
-    parent::$_build['limit']   = array();
     parent::$_build['limit']   = $this;
 
     $this->_offset       = $offset;

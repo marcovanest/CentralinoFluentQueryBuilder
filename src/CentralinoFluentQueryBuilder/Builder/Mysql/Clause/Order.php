@@ -1,8 +1,10 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql\Clause;
 
+use CentralinoFluentQueryBuilder\Builder\General;
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
 use CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Order extends Mysql\Builder
+class Order extends Mysql\Syntax implements Interfaces\Order
 {
   private $_column;
   private $_direction;
@@ -56,7 +58,7 @@ class Order extends Mysql\Builder
   {      
     $this->_direction = $direction;
 
-    $this->_column = new Mysql\Column();
+    $this->_column = new General\Column();
     $this->_column->setName($column);
     $this->_column->setType('normal');
 

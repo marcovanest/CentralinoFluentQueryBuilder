@@ -16,7 +16,8 @@ class Build
     switch(self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
     {
       case 'mysql':
-        return new Mysql\Target($table);
+        $syntax = new Mysql\Syntax();
+        return $syntax->target($table);
     }
   }
 
