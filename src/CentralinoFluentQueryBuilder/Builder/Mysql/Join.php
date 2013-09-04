@@ -6,20 +6,21 @@ class Join extends Builder
   private $_conditions;
   private $_alias;
   private $_joinposition;
+  private $_type;
 
-  public function __construct($table)
+  public function __construct($table, $type = 'inner')
   {
-    $this->_type          = 'join';  
+    $this->_type          = $type;  
     $this->_table         = $table;    
     $this->_conditions    = array();
-    $this->_joinposition  = isset(parent::$_build[$this->_type][$this->_table]) ? count(parent::$_build[$this->_type][$this->_table]) : 0;
+    $this->_joinposition  = isset(parent::$_build['join'][$this->_table]) ? count(parent::$_build['join'][$this->_table]) : 0;
 
-    if(!isset(parent::$_build[$this->_type]))
+    if(!isset(parent::$_build['join']))
     {
-      parent::$_build[$this->_type][$this->_table] = array();
+      parent::$_build['join'][$this->_table] = array();
     }
 
-    parent::$_build[$this->_type][$this->_table][] = $this;
+    parent::$_build['join'][$this->_table][] = $this;
   }
 
   /**
@@ -63,6 +64,21 @@ class Join extends Builder
   }
 
   /**
+   * return the type
+   *
+   * possible values
+   *  - inner
+   *  - left
+   *  - right
+   * 
+   * @return [type]
+   */
+  public function getType()
+  {
+    return $this->_type;
+  }
+
+  /**
    * ON clause for conditions that specify how to join the given table
    *
    * Logicaloperator: AND
@@ -81,7 +97,7 @@ class Join extends Builder
     $condition = new Condition();
     $condition->compare($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -105,7 +121,7 @@ class Join extends Builder
     $condition = new Condition('OR');
     $condition->compare($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -121,5 +137,51 @@ class Join extends Builder
     $this->_alias = $alias;
 
     return $this;
+  }
+
+  /**
+   * handles nested conditions if given
+   * 
+   * @param  function $function
+   * @param  string $logicaloperator
+   * @return Join
+   */
+  protected function _handleNestedConditions($function, $logicaloperator)
+  {
+    $this->_nested = true;
+
+    if(is_callable($function))
+    {
+      $this->_conditionposition = count(self::$_build['join'][$this->_table][$this->_joinposition]->_conditions);
+      $this->_nestedoperators[$this->_joinposition][$this->_conditionposition] = $logicaloperator; 
+
+      call_user_func($function, $this);
+    }
+
+    $this->_nested = false;
+
+    return $this;
+  }
+
+  /**
+   * Add a condition to the join 
+   * 
+   * @param Condition $condition
+   */
+  private function _addCondition($condition)
+  {
+    if($this->_nested)
+    {
+      if(!isset(self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition]))
+      {
+        self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition] = array();
+      }
+
+      self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition][] = $condition;
+    }
+    else
+    {
+      self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[] = $condition;   
+    }
   }
 }

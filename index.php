@@ -23,16 +23,12 @@ $stm     = $build->table('wp_users')
                   ->get();
 
 /**
- * Simple Inner Join
+ * Simple Join
  */
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
                   ->get();
-
-/**
- * Simple Left Join
- */
 
 /**
  * Simple Join alias

@@ -54,8 +54,11 @@ class Order extends Mysql\Builder
    */
   public function column($column, $direction)
   {      
-    $this->_column      = new Mysql\Column($column, 'normal');
-    $this->_direction   = $direction;
+    $this->_direction = $direction;
+
+    $this->_column = new Mysql\Column();
+    $this->_column->setName($column);
+    $this->_column->setType('normal');
 
     parent::$_build['order'][] = $this;
    

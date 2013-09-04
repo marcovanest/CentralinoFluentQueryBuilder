@@ -20,7 +20,6 @@ class Group extends Mysql\Builder
     else
     {
       $this->column($column);
-      
     }
   }
 
@@ -36,7 +35,9 @@ class Group extends Mysql\Builder
 
   public function column($column)
   {      
-    $this->_column = new Mysql\Column($column, 'normal');
+    $this->_column = new Mysql\Column();
+    $this->_column->setName($column);
+    $this->_column->setType('normal');
 
     parent::$_build['group'][] = $this;
    

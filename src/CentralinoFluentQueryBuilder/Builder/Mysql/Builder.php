@@ -2,11 +2,9 @@
 
 class Builder
 {
-  private $_nested = false;
+  protected $_nested = false;
 
   protected static $_build = array();
-
-  protected $_type;
 
   protected $_conditionposition;
 
@@ -32,14 +30,19 @@ class Builder
     return new Join($table);
   }
 
+  public function inner_join($table)
+  {
+    return new Join($table, 'inner');
+  }
+
   public function left_join($table)
   {
-    return new Join($table);
+    return new Join($table, 'left');
   }
 
   public function right_join($table)
   {
-    return new Join($table);
+    return new Join($table, 'right');
   }
 
   public function where($table = null)
@@ -57,7 +60,7 @@ class Builder
     if($this instanceof Join || 
         $this instanceof Clause\Where )  
     {
-      return $this->_handleNested($function, 'AND');
+      return $this->_handleNestedConditions($function, 'AND');
     }
   }
 
@@ -66,13 +69,13 @@ class Builder
     if($this instanceof Join || 
         $this instanceof Clause\Where )
     {
-      return $this->_handleNested($function, 'OR');
+      return $this->_handleNestedConditions($function, 'OR');
     }
   }
   
   public function limit($offset, $amountofrows = null)
   {
-    self::$_build['limit'] = compact('offset', 'amountofrows');
+    $limit = new Clause\Limit($offset, $amountofrows);
 
     return $this;
   }
@@ -97,34 +100,6 @@ class Builder
     return $parser->parse();
   }
 
-  private function _handleNested($function, $logicaloperator)
-  {
-    $this->_nested = true;
-    $position      = $this->getPosition();
-
-    if(is_callable($function))
-    {
-      if($this instanceof Join)
-      {
-        $table = $this->getTable();
-
-        $this->_conditionposition = count(self::$_build[$this->_type][$table][$position]->getConditions());
-        $this->_nestedoperators[$position][$this->_conditionposition] = $logicaloperator; 
-      }
-      elseif($this instanceof Clause\Where)
-      {
-        $this->_conditionposition = count(self::$_build[$this->_type][$position]->getConditions()); 
-        $this->_nestedoperators[$position][$this->_conditionposition] = $logicaloperator; 
-      }
-
-      call_user_func($function, $this);
-    }
-
-    $this->_nested = false;
-
-    return $this;
-  }
-
   protected function prepareArguments($left, $arguments)
   {
     if(empty($left))
@@ -137,46 +112,6 @@ class Builder
 
       return $arguments;
     }
-  }
-
-  protected function addCondition($condition)
-  {
-    $position = $this->getPosition();
-
-    if($this->_nested)
-    {
-      if($this instanceof Join)
-      {
-        $table = $this->getTable();
-
-        if(!isset(self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition]))
-        {
-          self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition] = array();
-        }
-        self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition][] = $condition;
-      }
-      elseif ($this instanceof Clause\Where) 
-      {
-        if(!isset(self::$_build[$this->_type][$position]->conditions[$this->_conditionposition]))
-        {
-          self::$_build[$this->_type][$position]->conditions[$this->_conditionposition] = array();
-        }
-        self::$_build[$this->_type][$position]->conditions[$this->_conditionposition][] = $condition;
-      }
-    }
-    else
-    {
-      if($this instanceof Join)
-      {
-        $table = $this->getTable();
-
-        self::$_build[$this->_type][$table][$position]->conditions[] = $condition;   
-      }
-      elseif($this instanceof Clause\Where)
-      {
-        self::$_build[$this->_type][$position]->conditions[] = $condition;
-      }
-    }     
   }
 }
 

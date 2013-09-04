@@ -93,11 +93,16 @@ class Parser extends Builder
       {
         foreach ($joins as $joinposition => $join) 
         {
-          $sql .= 'INNER JOIN ' . $table . ( ! empty($join->alias) ? ' AS ' . $join->alias : '' ) . ' ON ';
+          $alias = $join->getAlias();
+          $type  = strtoupper($join->getType());
+
+          $sql .= $type . ' JOIN ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ON ';
 
           if($join instanceof Join)
           {
-            $sql .= $this->_parseConditions($join->conditions, $join->_nestedoperators[$joinposition]);
+            $conditions = $join->getConditions();
+            
+            $sql .= $this->_parseConditions($conditions, $join->_nestedoperators[$joinposition]);
           }
         }
       }
@@ -115,12 +120,14 @@ class Parser extends Builder
       {
         if($whereposition !== 0)
         {
-          $sql .= $where->logicaloperator . ' ';
+          $sql .= $where->getLogicalOperator() . ' ';
         }
 
         if($where instanceof Clause\Where)
         {
-          $sql .= $this->_parseConditions($where->conditions, $where->_nestedoperators[$whereposition]);          
+          $conditions = $where->getConditions();
+
+          $sql .= $this->_parseConditions($conditions, $where->_nestedoperators[$whereposition]);          
         }
       }
       return $sql;
@@ -131,7 +138,12 @@ class Parser extends Builder
   {
     if(isset(self::$_build['limit']))
     {
-      $sql = 'LIMIT ' . self::$_build['limit']['offset'] . ( ! empty(self::$_build['limit']['amountofrows']) ? ',' . self::$_build['limit']['amountofrows'] : '') . ' ';
+      $limit = self::$_build['limit'];
+
+      $offset = $limit->getOffset();
+      $amountofrows = $limit->getAmountOfRows();
+
+      $sql = 'LIMIT ' . $offset . ( ! empty($amountofrows) ? ',' . $amountofrows : '') . ' ';
       return $sql;
     }
   } 
@@ -140,15 +152,18 @@ class Parser extends Builder
   {
     if(isset(self::$_build['order']))
     {
-      $total         = self::$_build['order']->count();
+      $total         = count(self::$_build['order']);
       $columncounter = 1;
 
       $sql = 'ORDER BY ';
       foreach (self::$_build['order'] as $orderposition => $order) 
       {
-        if($order instanceof Order)
+        if($order instanceof Clause\Order)
         {
-          $sql .= $order->column->name . ' ' . $order->direction;
+          $column     = $order->getColumn()->getName();
+          $direction  = $order->getDirection();
+
+          $sql .= $column . ' ' . $direction;
           $sql .= $columncounter!=$total ? ', ' : '';
 
           $columncounter++; 
@@ -162,16 +177,18 @@ class Parser extends Builder
   {
     if(isset(self::$_build['group']))
     {
-      $total         = self::$_build['group']->count();
+      $total         = count(self::$_build['group']);
       $columncounter = 1;
 
       $sql = 'GROUP BY ';
 
       foreach (self::$_build['group'] as $groupposition => $group) 
       {
-        if($group instanceof Group)
+        if($group instanceof Clause\Group)
         {
-          $sql .= $group->column->name;      
+          $column = $group->getColumn()->getName();
+
+          $sql .= $column;      
           $sql .= $columncounter!=$total ? ', ' : '';
 
           $columncounter++; 

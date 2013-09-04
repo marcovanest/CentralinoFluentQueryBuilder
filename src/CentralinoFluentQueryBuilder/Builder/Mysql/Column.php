@@ -7,13 +7,14 @@ class Column
   private $_alias;
   private $_table;
   private $_value;
+  private $_direction;
 
   public function __construct() { } 
 
   /**
    * return the column name
    * 
-   * @return [type]
+   * @return string
    */
   public function getName()
   {
@@ -23,7 +24,7 @@ class Column
   /**
    * set the column name
    * 
-   * @param [type] $value
+   * @param string $value
    */
   public function setName($value = null)
   {
@@ -34,7 +35,7 @@ class Column
   /**
    * get the column type
    * 
-   * @return [type]
+   * @return string
    */
   public function getType()
   {
@@ -44,7 +45,7 @@ class Column
   /**
    * set the column type
    * 
-   * @param [type] $value
+   * @param string $value
    */
   public function setType($value = null)
   {
@@ -54,7 +55,7 @@ class Column
   /**
    * get the column value
    * 
-   * @return [type]
+   * @return string
    */
   public function getValue()
   {
@@ -64,7 +65,7 @@ class Column
   /**
    * set the column value
    * 
-   * @param [type] $value
+   * @param string $value
    */
   public function setValue($value = null)
   {
@@ -74,7 +75,7 @@ class Column
   /**
    * get the column alias
    * 
-   * @return [type]
+   * @return string
    */
   public function getAlias()
   {
@@ -84,7 +85,7 @@ class Column
   /**
    * set the column alias
    * 
-   * @param [type] $value
+   * @param string $value
    */
   public function setAlias($value = null)
   {
@@ -95,7 +96,7 @@ class Column
   /**
    * get the column value
    * 
-   * @return [type]
+   * @return string
    */
   public function getTable()
   {
@@ -105,7 +106,7 @@ class Column
   /**
    * set the column value
    * 
-   * @param [type] $value
+   * @param string $value
    */
   public function setTable($value = null)
   {

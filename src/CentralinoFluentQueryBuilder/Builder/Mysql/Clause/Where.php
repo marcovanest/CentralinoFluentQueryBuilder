@@ -70,7 +70,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->compare($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -89,7 +89,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->compare($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -108,7 +108,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->range($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -127,7 +127,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->range($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -148,7 +148,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->comparelist($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -169,7 +169,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->comparelist($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -190,7 +190,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->comparelist($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this; 
   }
@@ -211,7 +211,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->comparelist($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;
   }
@@ -232,7 +232,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->contains($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this; 
   }
@@ -253,7 +253,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->contains($arguments);
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this; 
   }
@@ -274,7 +274,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->contains($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;  
   }
@@ -295,7 +295,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->contains($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;  
   }
@@ -316,7 +316,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->isnull($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;      
   }
@@ -337,7 +337,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->isnull($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;      
   }
@@ -358,7 +358,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition();
     $condition->isnull($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;      
   }
@@ -379,7 +379,7 @@ class Where extends Mysql\Builder
     $condition = new Mysql\Condition('OR');
     $condition->isnull($arguments, 'NOT');
 
-    parent::addCondition($condition);
+    $this->_addCondition($condition);
 
     return $this;      
   }
@@ -389,4 +389,48 @@ class Where extends Mysql\Builder
 
   }
 
+  /**
+   * handles nested conditions if given
+   * 
+   * @param  function $function
+   * @param  string $logicaloperator
+   * @return Where
+   */
+  protected function _handleNestedConditions($function, $logicaloperator)
+  {
+    $this->_nested = true;
+
+    if(is_callable($function))
+    {
+      $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->_conditions); 
+      $this->_nestedoperators[$this->_whereposition][$this->_conditionposition] = $logicaloperator; 
+
+      call_user_func($function, $this);
+    }
+
+    $this->_nested = false;
+
+    return $this;
+  }
+
+  /**
+   * Add a condition to the where clause 
+   * 
+   * @param Condition $condition
+   */
+  private function _addCondition($condition)
+  {
+    if($this->_nested)
+    {
+      if(!isset(self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition]))
+      {
+        self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition] = array();
+      }
+      self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition][] = $condition;
+    }
+    else
+    {
+      self::$_build[$this->_type][$this->_whereposition]->_conditions[] = $condition;
+    }
+  }
 }
