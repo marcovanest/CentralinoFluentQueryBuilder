@@ -8,11 +8,7 @@ class Builder
 
   protected $_type;
 
-  protected $_whereposition;
-
   protected $_conditionposition;
-
-  protected $_joinposition;
 
   protected $_nestedoperators;
 
@@ -32,6 +28,16 @@ class Builder
   }
 
   public function join($table)
+  {
+    return new Join($table);
+  }
+
+  public function left_join($table)
+  {
+    return new Join($table);
+  }
+
+  public function right_join($table)
   {
     return new Join($table);
   }
@@ -94,18 +100,21 @@ class Builder
   private function _handleNested($function, $logicaloperator)
   {
     $this->_nested = true;
+    $position      = $this->getPosition();
 
     if(is_callable($function))
     {
       if($this instanceof Join)
       {
-        $this->_conditionposition = count(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions);
-        $this->_nestedoperators[$this->_joinposition][$this->_conditionposition] = $logicaloperator; 
+        $table = $this->getTable();
+
+        $this->_conditionposition = count(self::$_build[$this->_type][$table][$position]->getConditions());
+        $this->_nestedoperators[$position][$this->_conditionposition] = $logicaloperator; 
       }
       elseif($this instanceof Clause\Where)
       {
-        $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->conditions); 
-        $this->_nestedoperators[$this->_whereposition][$this->_conditionposition] = $logicaloperator; 
+        $this->_conditionposition = count(self::$_build[$this->_type][$position]->getConditions()); 
+        $this->_nestedoperators[$position][$this->_conditionposition] = $logicaloperator; 
       }
 
       call_user_func($function, $this);
@@ -132,34 +141,40 @@ class Builder
 
   protected function addCondition($condition)
   {
+    $position = $this->getPosition();
+
     if($this->_nested)
     {
       if($this instanceof Join)
       {
-        if(!isset(self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition]))
+        $table = $this->getTable();
+
+        if(!isset(self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition]))
         {
-          self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition] = array();
+          self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition] = array();
         }
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[$this->_conditionposition][] = $condition;
+        self::$_build[$this->_type][$table][$position]->conditions[$this->_conditionposition][] = $condition;
       }
       elseif ($this instanceof Clause\Where) 
       {
-        if(!isset(self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition]))
+        if(!isset(self::$_build[$this->_type][$position]->conditions[$this->_conditionposition]))
         {
-          self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition] = array();
+          self::$_build[$this->_type][$position]->conditions[$this->_conditionposition] = array();
         }
-        self::$_build[$this->_type][$this->_whereposition]->conditions[$this->_conditionposition][] = $condition;
+        self::$_build[$this->_type][$position]->conditions[$this->_conditionposition][] = $condition;
       }
     }
     else
     {
       if($this instanceof Join)
       {
-        self::$_build[$this->_type][$this->table][$this->_joinposition]->conditions[] = $condition;   
+        $table = $this->getTable();
+
+        self::$_build[$this->_type][$table][$position]->conditions[] = $condition;   
       }
       elseif($this instanceof Clause\Where)
       {
-        self::$_build[$this->_type][$this->_whereposition]->conditions[] = $condition;
+        self::$_build[$this->_type][$position]->conditions[] = $condition;
       }
     }     
   }

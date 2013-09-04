@@ -33,38 +33,38 @@ class Parser extends Builder
       foreach ($selectcolumns as $column) 
       {
         $seperator = $total != $columncounter ? ', ' : '';
-        $table     = !empty($column->table) ? $column->table.'.' : '';
+        $table     = ! empty($column->table) ? $column->table . '.' : '';
         $columncounter++;
 
         switch($column->getType())
         {
           case 'normal':
-            $columns .= $table.$column->getName().$seperator;
+            $columns .= $table . $column->getName() . $seperator;
             break;
 
           case 'count':
-            $columns .= 'COUNT('.$table.$column->getName().') '.$seperator;
+            $columns .= 'COUNT(' . $table . $column->getName() . ') ' . $seperator;
             break;
 
           case 'avg':
-            $columns .= 'AVG('.$table.$column->getName().') '.$seperator;
+            $columns .= 'AVG(' . $table . $column->getName() . ') ' . $seperator;
             break;
 
           case 'sum':
-            $columns .= 'SUM('.$table.$column->getName().') '.$seperator;
+            $columns .= 'SUM(' . $table.$column->getName().') ' .$seperator;
             break;
 
           case 'min':
-            $columns .= 'MIN('.$table.$column->getName().') '.$seperator;
+            $columns .= 'MIN(' . $table . $column->getName() . ') ' . $seperator;
             break;
 
           case 'max':
-            $columns .= 'MAX('.$table.$column->getName().') '.$seperator;
+            $columns .= 'MAX(' . $table . $column->getName() . ') ' . $seperator;
             break;
         }      
       }
 
-      return 'SELECT '.$columns.' ';
+      return 'SELECT ' . $columns . ' ';
     }
   }
 
@@ -73,7 +73,11 @@ class Parser extends Builder
     if(isset(parent::$_build['target']))
     {
       $target = parent::$_build['target'];
-      return 'FROM '.$target->table. (!empty($target->alias) ? ' AS '.$target->alias : '' ).' ';
+
+      $table = $target->getTable();
+      $alias = $target->getAlias();
+
+      return 'FROM ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
     }
   }
 
@@ -89,7 +93,7 @@ class Parser extends Builder
       {
         foreach ($joins as $joinposition => $join) 
         {
-          $sql .= 'INNER JOIN '.$table. (!empty($join->alias) ? ' AS '.$join->alias : '' ).' ON ';
+          $sql .= 'INNER JOIN ' . $table . ( ! empty($join->alias) ? ' AS ' . $join->alias : '' ) . ' ON ';
 
           if($join instanceof Join)
           {
@@ -111,7 +115,7 @@ class Parser extends Builder
       {
         if($whereposition !== 0)
         {
-          $sql .= $where->logicaloperator.' ';
+          $sql .= $where->logicaloperator . ' ';
         }
 
         if($where instanceof Clause\Where)
@@ -127,7 +131,7 @@ class Parser extends Builder
   {
     if(isset(self::$_build['limit']))
     {
-      $sql = 'LIMIT '.self::$_build['limit']['offset'].(!empty(self::$_build['limit']['amountofrows']) ? ','.self::$_build['limit']['amountofrows'] : '').' ';
+      $sql = 'LIMIT ' . self::$_build['limit']['offset'] . ( ! empty(self::$_build['limit']['amountofrows']) ? ',' . self::$_build['limit']['amountofrows'] : '') . ' ';
       return $sql;
     }
   } 
@@ -144,7 +148,7 @@ class Parser extends Builder
       {
         if($order instanceof Order)
         {
-          $sql .= $order->column->name.' '.$order->direction;
+          $sql .= $order->column->name . ' ' . $order->direction;
           $sql .= $columncounter!=$total ? ', ' : '';
 
           $columncounter++; 
@@ -183,7 +187,7 @@ class Parser extends Builder
     {
       if(is_array($condition))
       {
-        $sql .= ($conditionposition != 0 ? $logicaloperators[$conditionposition] : '').' ( ';
+        $sql .= ($conditionposition != 0 ? $logicaloperators[$conditionposition] : '') . ' ( ';
         $this->_parseConditions($condition, null, $sql, true);
       }
       
@@ -206,7 +210,7 @@ class Parser extends Builder
     $sql = '';
     if($conditionposition !== 0)
     {
-      $sql .= $condition->getLogicalOperator().' ';
+      $sql .= $condition->getLogicalOperator() . ' ';
     }
 
     $arguments = $condition->getArguments();
@@ -218,53 +222,53 @@ class Parser extends Builder
         $operator = $arguments['operator'];
         $right    = $arguments['right'];
 
-        $sql .= $column->getName().' '.$operator.' '.$right.' ';
+        $sql .= $column->getName() . ' ' . $operator . ' ' . $right . ' ';
         break;
 
      case 'between':
         $min = $arguments['min'];
         $max = $arguments['max'];
 
-        $sql .= $column->getName().' BETWEEN '.$min.' AND '.$max.' ';
+        $sql .= $column->getName() . ' BETWEEN ' . $min . ' AND ' . $max . ' ';
         break;
 
      case 'notbetween':
         $min = $arguments['min'];
         $max = $arguments['max'];
 
-        $sql .= $column->getName().' NOT BETWEEN '.$min.' AND '.$max.' ';
+        $sql .= $column->getName() . ' NOT BETWEEN ' . $min . ' AND ' . $max . ' ';
         break;
 
      case 'in':
         $list = $arguments['list'];
 
-        $sql .= $column->getName().' IN ('.implode(', ', $list).') '; 
+        $sql .= $column->getName() . ' IN (' . implode(', ', $list) . ') '; 
         break;
 
       case 'notin':
         $list = $arguments['list'];
 
-        $sql .= $column->getName().' NOT IN ('.implode(', ', $list).') '; 
+        $sql .= $column->getName() . ' NOT IN (' . implode(', ', $list) . ') '; 
         break;
 
       case 'isnull':
-        $sql .= $column->getName().' IS NULL '; 
+        $sql .= $column->getName() . ' IS NULL '; 
         break;
 
       case 'isnotnull':
-        $sql .= $column->getName().' IS NOT NULL '; 
+        $sql .= $column->getName() . ' IS NOT NULL '; 
         break;
       
       case 'like':
         $contains = $arguments['contains'];
 
-        $sql .= $column->getName().' LIKE ("%'.$contains.'%") '; 
+        $sql .= $column->getName() . ' LIKE ("%' . $contains . '%") '; 
         break;
       
       case 'notlike':
         $contains = $arguments['contains'];
 
-        $sql .= $column->getName().' NOT LIKE ("%'.$contains.'%") '; 
+        $sql .= $column->getName() . ' NOT LIKE ("%' . $contains . '%") '; 
         break;
 
       default:

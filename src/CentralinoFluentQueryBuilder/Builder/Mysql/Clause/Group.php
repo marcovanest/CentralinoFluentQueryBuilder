@@ -4,11 +4,11 @@ use CentralinoFluentQueryBuilder\Builder\Mysql;
 
 class Group extends Mysql\Builder
 {
-  public $column;
+  private $_column;
 
   public function __construct($column)
   {
-    parent::$_build['group'] = new \ArrayObject();
+    parent::$_build['group'] = array();
 
     if($column instanceof \Closure)
     {
@@ -24,11 +24,21 @@ class Group extends Mysql\Builder
     }
   }
 
+  /**
+   * return the columnobject
+   * 
+   * @return string
+   */
+  public function getColumn()
+  {
+    return $this->_column;
+  }
+
   public function column($column)
   {      
-    $this->column = new Mysql\Column($column, 'normal');
+    $this->_column = new Mysql\Column($column, 'normal');
 
-    parent::$_build['group']->append($this);
+    parent::$_build['group'][] = $this;
    
     return $this;
   }

@@ -4,15 +4,6 @@ include 'src/Bootstrap.php';
 $pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 $build      = new CentralinoFluentQueryBuilder\Builder\Build($pdo);
 
-$stm     = $build->table('wp_users')
-                  ->select(function($builder){
-                      $builder->columns(array('ID')); //No table prefix
-                      $builder->columns(array('wp_users.ID')); //With table prefix
-                      $builder->wp_users_columns(array('user_status', 'display_name')); //No table prefix, but with function prefix
-                  })
-                  ->join('wp_usermeta')->alias('META')->on('META.user_id', '=', 1)
-                  ->get();
-
 /**
  * Simple Select
  */
@@ -32,12 +23,16 @@ $stm     = $build->table('wp_users')
                   ->get();
 
 /**
- * Simple Join
+ * Simple Inner Join
  */
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
                   ->get();
+
+/**
+ * Simple Left Join
+ */
 
 /**
  * Simple Join alias

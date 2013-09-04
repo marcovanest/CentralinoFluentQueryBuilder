@@ -12,6 +12,7 @@ class Column
 
   /**
    * return the column name
+   * 
    * @return [type]
    */
   public function getName()
@@ -21,6 +22,7 @@ class Column
 
   /**
    * set the column name
+   * 
    * @param [type] $value
    */
   public function setName($value = null)
@@ -31,6 +33,7 @@ class Column
 
   /**
    * get the column type
+   * 
    * @return [type]
    */
   public function getType()
@@ -40,6 +43,7 @@ class Column
 
   /**
    * set the column type
+   * 
    * @param [type] $value
    */
   public function setType($value = null)
@@ -49,6 +53,7 @@ class Column
 
   /**
    * get the column value
+   * 
    * @return [type]
    */
   public function getValue()
@@ -58,6 +63,7 @@ class Column
 
   /**
    * set the column value
+   * 
    * @param [type] $value
    */
   public function setValue($value = null)
@@ -67,6 +73,7 @@ class Column
 
   /**
    * get the column alias
+   * 
    * @return [type]
    */
   public function getAlias()
@@ -76,6 +83,7 @@ class Column
 
   /**
    * set the column alias
+   * 
    * @param [type] $value
    */
   public function setAlias($value = null)
@@ -86,6 +94,7 @@ class Column
 
   /**
    * get the column value
+   * 
    * @return [type]
    */
   public function getTable()
@@ -95,6 +104,7 @@ class Column
 
   /**
    * set the column value
+   * 
    * @param [type] $value
    */
   public function setTable($value = null)

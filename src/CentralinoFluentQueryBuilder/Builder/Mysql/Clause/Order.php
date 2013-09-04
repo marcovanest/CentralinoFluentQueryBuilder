@@ -4,12 +4,12 @@ use CentralinoFluentQueryBuilder\Builder\Mysql;
 
 class Order extends Mysql\Builder
 {
-  public $column;
-  public $direction;
+  private $_column;
+  private $_direction;
 
-  public function __construct($column, $direction)
+  public function __construct($column, $direction = 'ASC')
   {
-    parent::$_build['order'] = new \ArrayObject();
+    parent::$_build['order'] = array();
 
     if($column instanceof \Closure)
     {
@@ -25,13 +25,41 @@ class Order extends Mysql\Builder
     }
   }
 
+  /**
+   * return the columnobject
+   * 
+   * @return string
+   */
+  public function getColumn()
+  {
+    return $this->_column;
+  }
+
+  /**
+   * return the order direction
+   * 
+   * @return [type]
+   */
+  public function getDirection()
+  {
+    return $this->_direction;
+  }
+
+  /**
+   * Specifies the column of the order by clause
+   * 
+   * @param  string $column
+   * @param  string $direction
+   * @return Order
+   */
   public function column($column, $direction)
   {      
-    $this->column    = new Mysql\Column($column, 'normal');
-    $this->direction = $direction;
+    $this->_column      = new Mysql\Column($column, 'normal');
+    $this->_direction   = $direction;
 
-    parent::$_build['order']->append($this);
+    parent::$_build['order'][] = $this;
    
     return $this;
   }
+
 }
