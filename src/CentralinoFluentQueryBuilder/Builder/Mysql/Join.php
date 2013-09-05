@@ -10,20 +10,20 @@ class Join extends Syntax implements Interfaces\Join
   private $_alias;
   private $_joinposition;
   private $_type;
-  private $_nestedoperators = array();
+  private $_nestedoperators;
+  private $_nested = false;
 
   public function __construct($table, $type = 'inner')
   {
     $this->_type          = $type;  
-    $this->_table         = $table;    
-    $this->_joinposition  = isset(parent::$_build['join'][$this->_table]) ? count(parent::$_build['join'][$this->_table]) : 0;
+    $this->_table         = $table;   
 
-    if(!isset(parent::$_build['join']))
-    {
-      parent::$_build['join'][$this->_table] = array();
-    }
+    // if(!isset(parent::$_build['join']))
+    // {
+    //   parent::$_build['join'][$this->_table] = array();
+    // }
 
-    parent::$_build['join'][$this->_table][] = $this;
+    // parent::$_build['join'][$this->_table][] = $this;
   }
 
   /**
@@ -165,8 +165,8 @@ class Join extends Syntax implements Interfaces\Join
 
     if(is_callable($function))
     {
-      $this->_conditionposition = count(self::$_build['join'][$this->_table][$this->_joinposition]->_conditions);
-      $this->_nestedoperators[$this->_joinposition][$this->_conditionposition] = $logicaloperator; 
+      $this->_conditionposition = count($this->_conditions);
+      $this->_nestedoperators[$this->_conditionposition] = $logicaloperator; 
 
       call_user_func($function, $this);
     }
@@ -185,16 +185,11 @@ class Join extends Syntax implements Interfaces\Join
   {
     if($this->_nested)
     {
-      if(!isset(self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition]))
-      {
-        self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition] = array();
-      }
-
-      self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[$this->_conditionposition][] = $condition;
+      $this->_conditions[$this->_conditionposition][] = $condition;
     }
     else
     {
-      self::$_build['join'][$this->_table][$this->_joinposition]->_conditions[] = $condition;   
+      $this->_conditions[] = $condition;   
     }
   }
 }

@@ -8,23 +8,16 @@ class Where extends Mysql\Syntax implements Interfaces\Where
 {
   private $_left;
   private $_logicaloperator;
-  private $_conditions;
+  private $_conditions = array();
   private $_whereposition;
   private $_nestedoperators = array();
+  private $_nested = false;
 
   public function __construct($left, $logicaloperator = 'AND')
   { 
     $this->_type            = 'where';  
     $this->_left            = $left;  
-    $this->_whereposition   = isset(parent::$_build[$this->_type]) ? count(parent::$_build[$this->_type]) : 0;
     $this->_logicaloperator = $logicaloperator; 
-    $this->_conditions      = array();  
-
-    if(!isset(parent::$_build[$this->_type]))
-    {
-      parent::$_build[$this->_type] = array();
-    }
-    parent::$_build[$this->_type][] = $this;
   }
 
   /**
@@ -415,8 +408,8 @@ class Where extends Mysql\Syntax implements Interfaces\Where
 
     if(is_callable($function))
     {
-      $this->_conditionposition = count(self::$_build[$this->_type][$this->_whereposition]->_conditions); 
-      $this->_nestedoperators[$this->_whereposition][$this->_conditionposition] = $logicaloperator; 
+      $this->_conditionposition = count($this->_conditions); 
+      $this->_nestedoperators[$this->_conditionposition] = $logicaloperator; 
 
       call_user_func($function, $this);
     }
@@ -435,15 +428,11 @@ class Where extends Mysql\Syntax implements Interfaces\Where
   {
     if($this->_nested)
     {
-      if(!isset(self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition]))
-      {
-        self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition] = array();
-      }
-      self::$_build[$this->_type][$this->_whereposition]->_conditions[$this->_conditionposition][] = $condition;
+      $this->_conditions[$this->_conditionposition][] = $condition;
     }
     else
     {
-      self::$_build[$this->_type][$this->_whereposition]->_conditions[] = $condition;
+      $this->_conditions[] = $condition;
     }
   }
 }

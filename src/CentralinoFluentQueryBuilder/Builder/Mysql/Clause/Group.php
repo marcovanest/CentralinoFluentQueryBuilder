@@ -10,8 +10,6 @@ class Group extends Mysql\Syntax implements Interfaces\Group
 
   public function __construct($column)
   {
-    parent::$_build['group'] = array();
-
     if($column instanceof \Closure)
     {
       if(is_callable($column))
@@ -40,8 +38,6 @@ class Group extends Mysql\Syntax implements Interfaces\Group
     $this->_column = new General\Column();
     $this->_column->setName($column);
     $this->_column->setType('normal');
-
-    parent::$_build['group'][] = $this;
    
     return $this;
   }

@@ -9,8 +9,6 @@ class Limit extends Mysql\Syntax
 
   public function __construct($offset, $amountofrows = null)
   {
-    parent::$_build['limit']   = $this;
-
     $this->_offset       = $offset;
     $this->_amountofrows = $amountofrows;
   }

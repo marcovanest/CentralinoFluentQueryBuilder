@@ -4,47 +4,46 @@ use CentralinoFluentQueryBuilder\Builder\Interfaces;
 
 class Parser
 {
-  private $_build;
+  private $_dms;
 
-  public function __construct($build)
+  public function __construct($dms)
   {
-    $this->_build = $build;
+    $this->_dms = $dms;
   }
 
   public function parse()
   {
     $sql = '';
     $sql .= $this->_parseDMS();
-    $sql .= $this->_parseJoins();
-    $sql .= $this->_parseWheres();
-    $sql .= $this->_parseLimit();
-    $sql .= $this->_parseOrder();
-    $sql .= $this->_parseGroup();
 
     return $sql;
   }
 
   private function _parseDMS()
   {
-    $dms = isset($this->_build['dms']) ? $this->_build['dms'] : null ;
+    $sql = '';
 
-    if( ! is_null($dms) )
+    if($this->_dms instanceof Interfaces\Select)
     {
-      if($dms instanceof Interfaces\Select)
-      {
-        return $this->_parseSelect($dms);
-      }
-      elseif($dms instanceof Interfaces\Insert)
-      {
-        return $this->_parseInsert($dms);
-      }
+      $sql .= $this->_parseSelect();
+      $sql .= $this->_parseJoins();
+      $sql .= $this->_parseWheres();
+      $sql .= $this->_parseLimit();
+      $sql .= $this->_parseOrder();
+      $sql .= $this->_parseGroup();
     }
+    elseif($this->_dms instanceof Interfaces\Insert)
+    {
+      return $this->_parseInsert();
+    }
+
+    return $sql;
   }
 
-  private function _parseSelect($dms)
+  private function _parseSelect()
   {
     $columns        = '';
-    $selectcolumns  = $dms->getColumns();
+    $selectcolumns  = $this->_dms->getColumns();
     $total          = count($selectcolumns);
     $columncounter  = 1;
 
@@ -82,16 +81,17 @@ class Parser
       }      
     }
 
-    $target = $this->_build['target'];
+    $target = $this->_dms->getTarget();
+
     $table  = $target->getTable();
     $alias  = $target->getAlias();
 
     return 'SELECT ' . $columns . ' FROM ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
   }
 
-  private function _parseInsert($dms)
+  private function _parseInsert()
   {
-    $insertcolumns  = $dms->getColumns();
+    $insertcolumns  = $this->_dms->getColumns();
 
     $columns = array();
     $values  = array();
@@ -102,9 +102,17 @@ class Parser
       $values[]  = $column->getValue();
     }
 
-    $target = $this->_build['target'];
+    $target = $this->_dms->getTarget();
+
     $table  = $target->getTable();
     $alias  = $target->getAlias();
+
+    $insertselect = $this->_dms->getSelect();
+    if( $insertselect instanceof Interfaces\Select)
+    {
+      $selectparser = new Parser($insertselect);
+      $parse        = $selectparser->parse();
+    }
 
     return 'INSERT INTO ' . $table . ( ! empty($alias) ? ' AS ' . $alias : '' ) . ' ';
   }
@@ -113,11 +121,11 @@ class Parser
   {
     $sql = '';
 
-    if(isset($this->_build['join']))
-    {
-      $tables = array_keys($this->_build['join']);
+    $dmsjoins = $this->_dms->getJoins();
 
-      foreach ($this->_build['join'] as $table => $joins) 
+    if( is_array($dmsjoins) )
+    {
+      foreach ($dmsjoins as $table => $joins) 
       {
         foreach ($joins as $joinposition => $join) 
         {
@@ -143,10 +151,12 @@ class Parser
 
   private function _parseWheres()
   {
-    if(isset($this->_build['where']))
+    $dmswheres = $this->_dms->getWheres();
+
+    if( ! empty($dmswheres) )
     {
       $sql = 'WHERE ';
-      foreach ($this->_build['where'] as $whereposition => $where) 
+      foreach ($dmswheres as $whereposition => $where) 
       {
         if($whereposition !== 0)
         {
@@ -159,7 +169,6 @@ class Parser
           $nestedoperators = $where->getNestedOperators();
           $logicaloperator = isset($nestedoperators[$whereposition]) ? $nestedoperators[$whereposition] : null;
 
-
           $sql .= $this->_parseConditions($conditions, $logicaloperator);          
         }
       }
@@ -169,11 +178,11 @@ class Parser
 
   private function _parseLimit()
   {
-    if(isset($this->_build['limit']))
-    {
-      $limit = $this->_build['limit'];
+    $limit = $this->_dms->getLimit();
 
-      $offset = $limit->getOffset();
+    if( ! is_null($limit) )
+    {
+      $offset       = $limit->getOffset();
       $amountofrows = $limit->getAmountOfRows();
 
       $sql = 'LIMIT ' . $offset . ( ! empty($amountofrows) ? ',' . $amountofrows : '') . ' ';
@@ -183,13 +192,15 @@ class Parser
 
   private function _parseOrder()
   {
-    if(isset($this->_build['order']))
+    $order = $this->_dms->getOrder();
+
+    if( ! is_null($order) )
     {
-      $total         = count($this->_build['order']);
+      $total         = count($order);
       $columncounter = 1;
 
       $sql = 'ORDER BY ';
-      foreach ($this->_build['order'] as $orderposition => $order) 
+      foreach ($order as $orderposition => $order) 
       {
         if($order instanceof Interfaces\Order)
         {
@@ -208,21 +219,23 @@ class Parser
 
   private function _parseGroup()
   {
-    if(isset($this->_build['group']))
+    $group = $this->_dms->getGroup();
+
+    if( ! is_null($group))
     {
-      $total         = count($this->_build['group']);
+      $total         = count($group);
       $columncounter = 1;
 
       $sql = 'GROUP BY ';
 
-      foreach ($this->_build['group'] as $groupposition => $group) 
+      foreach ($group as $groupposition => $group) 
       {
         if($group instanceof Interfaces\Group)
         {
           $column = $group->getColumn()->getName();
 
           $sql .= $column;      
-          $sql .= $columncounter!=$total ? ', ' : '';
+          $sql .= $columncounter != $total ? ', ' : '';
 
           $columncounter++; 
         }
@@ -237,7 +250,7 @@ class Parser
     {
       if(is_array($condition))
       {
-        $sql .= ($conditionposition != 0 ? $logicaloperators[$conditionposition] : '') . ' ( ';
+        $sql .= ($conditionposition != 0 ? $logicaloperators.' ' : '') . '( ';
         $this->_parseConditions($condition, null, $sql, true);
       }
       

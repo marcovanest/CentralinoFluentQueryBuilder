@@ -4,16 +4,14 @@ class Build
 {
   private static $_pdo;
 
-  protected static $_table;
-
   public function __construct(PDO $pdo)
   {
-    self::$_pdo = $pdo;
+    static::$_pdo = $pdo;
   }
 
   public function table($table)
   {
-    switch(self::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
+    switch(static::$_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
     {
       case 'mysql':
         $syntax = new Mysql\Syntax();

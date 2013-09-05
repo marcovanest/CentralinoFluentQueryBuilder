@@ -11,8 +11,6 @@ class Order extends Mysql\Syntax implements Interfaces\Order
 
   public function __construct($column, $direction = 'ASC')
   {
-    parent::$_build['order'] = array();
-
     if($column instanceof \Closure)
     {
       if(is_callable($column))
@@ -61,8 +59,6 @@ class Order extends Mysql\Syntax implements Interfaces\Order
     $this->_column = new General\Column();
     $this->_column->setName($column);
     $this->_column->setType('normal');
-
-    parent::$_build['order'][] = $this;
    
     return $this;
   }

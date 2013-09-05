@@ -1,68 +1,92 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
 use CentralinoFluentQueryBuilder\Builder;
+use CentralinoFluentQueryBuilder\Builder\Interfaces;
 use CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Syntax 
+class Syntax implements Interfaces\Syntax
 {
-  protected $_nested = false;
+  protected static $_targettable;
 
-  protected static $_build = array();
-
-  protected $_conditionposition;
+  protected static $_dms;
 
   public function __construct()
   {
-    self::$_build = '';
+
+  }
+
+  public function getSyntaxInstance()
+  {
+    return $this;
   }
 
   public function target($table)
   {    
-    self::$_build['target'] = new Target($table);
+    static::$_targettable = new Target($table);
 
     return $this;
   }
 
   public function select($fields = array())
   {
-    return new DMS\Select($fields);
+    static::$_dms = new DMS\Select($fields);
+
+    return static::$_dms;
   }
 
   public function insert($fields = array())
   {
-    return new DMS\Insert($fields);
+    static::$_dms = new DMS\Insert($fields);
+
+    return static::$_dms;
   }
 
   public function join($table)
   {
     $join = new Join($table);
-
+    static::$_dms->_addJoin($table, $join);
+    
     return $join;
   }
 
   public function inner_join($table)
   {
-    return new Join($table, 'inner');
+    $join = new Join($table, 'inner');
+    static::$_dms->_addJoin($table, $join);
+    
+    return $join;
   }
 
   public function left_join($table)
   {
-    return new Join($table, 'left');
+    $join = new Join($table, 'left');
+    static::$_dms->_addJoin($table, $join);
+    
+    return $join;
   }
 
   public function right_join($table)
   {
-    return new Join($table, 'right');
+    $join = new Join($table, 'right');
+    $this->_joins[$table][] = $join;
+    
+    return $join;
   }
 
   public function where($table = null)
   {
-    return new Clause\Where($table);
+    $where = new Clause\Where($table);
+    static::$_dms->_addWhere($where);
+    
+    return $where;
   }
 
   public function or_where($table = null)
   {
-    return new Clause\Where($table, 'OR');
+    $where = new Clause\Where($table, 'OR');
+    static::$_dms->_addWhere($where);
+    
+    return $where;
   }
 
   public function nested(\Closure $function)
@@ -86,28 +110,37 @@ class Syntax
   public function limit($offset, $amountofrows = null)
   {
     $limit = new Mysql\Clause\Limit($offset, $amountofrows);
+    static::$_dms->_addLimit($limit);
 
-    return $this;
+    return $limit;
   }
 
   public function order($columns, $direction = null)
   {
     $order = new Mysql\Clause\Order($columns, $direction);
+    static::$_dms->_addOrder($order);
 
-    return $this;
+    return $order;
   }
 
   public function group($column)
   {
-    $order = new Mysql\Clause\Group($column);
+    $group = new Mysql\Clause\Group($column);
+    static::$_dms->_addGroup($group);
 
-    return $this;
+    return $group;
   }
 
-  public function get()
+  public function asString()
   {
-    $parser = new Builder\Parser(self::$_build);
+    $parser = new Builder\Parser(static::$_dms);
+
     return $parser->parse();
+  }
+
+  public function asObject()
+  {
+    return static::$_dms;
   }
 
   protected function prepareArguments($left, $arguments)

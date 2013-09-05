@@ -1,6 +1,6 @@
 <?php namespace CentralinoFluentQueryBuilder\Builder\Mysql;
 
-class Target extends Syntax
+class Target
 {
   private $_table;
   private $_alias;

@@ -4,23 +4,12 @@ include 'src/Bootstrap.php';
 $pdo        = new PDO('mysql:host=127.0.0.1;dbname={DB}', '{USER}', '{PASSWORD}');
 $build      = new CentralinoFluentQueryBuilder\Builder\Build($pdo);
 
-// $stm    = $build->table('wp_users')
-//                   ->insert(array('wp_name' => 'Marco van Est'))
-//                   ->get();
-
-$stm     = $build->table('wp_users')
-                  ->select(array('*'))
-                  ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
-                  ->get();
-                  ;
-
-
 /**
  * Simple Select
  */
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
-                  ->get();
+                  ->asString();
 
 /**
  * Complex Select nested
@@ -31,7 +20,7 @@ $stm     = $build->table('wp_users')
                       $builder->columns(array('wp_users.ID')); //With table prefix
                       $builder->wp_users_columns(array('user_status', 'display_name')); //No table prefix, but with function prefix
                   })
-                  ->get();
+                  ->asString();
 
 /**
  * Simple Join
@@ -39,7 +28,7 @@ $stm     = $build->table('wp_users')
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->join('wp_usermeta')->on('wp_usermeta.user_id', '=', 1)
-                  ->get();
+                  ->asString();
 
 /**
  * Simple Join alias
@@ -47,7 +36,7 @@ $stm     = $build->table('wp_users')
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->join('wp_usermeta')->alias('META')->on('META.user_id', '=', 1)
-                  ->get();
+                  ->asString();
 
 /**
  * Complex Join nested
@@ -58,7 +47,7 @@ $stm     = $build->table('wp_users')
                     $builder->on('wp_usermeta.user_id', '=', 'wp_users.ID');
                     $builder->on('wp_usermeta.umeta_id', '=', 4);
                   })
-                  ->get();
+                  ->asString();
 
 /**
  * Complex Join multiple nesting
@@ -74,7 +63,7 @@ $stm     = $build->table('wp_users')
                       ->or_nested(function($builder){
                         $builder->on('wp_usermeta.user_id', '=', 7);
                       })
-                  ->get();
+                  ->asString();
 
 /**
  * Simple Where
@@ -83,7 +72,7 @@ $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->where('wp_users.user_id')->compare('=', 4)
                   ->or_where('wp_users.user_id')->compare('=', 5)
-                  ->get();
+                  ->asString();
 
 /**
  * Complex Where nested
@@ -109,7 +98,7 @@ $stm     = $build->table('wp_users')
                       $builder->in('wp_users.ID', array(1,4)); //IN condition
                       $builder->or_notin('wp_users.ID', array(1,4)); //NOTIN condition
                     })
-                  ->get();
+                  ->asString();
 
 /**
  * LIMIT
@@ -117,7 +106,7 @@ $stm     = $build->table('wp_users')
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->limit(0, 5)
-                  ->get();
+                  ->asString();
 
 /**
  * Simple ORDER BY
@@ -125,7 +114,7 @@ $stm     = $build->table('wp_users')
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->order('user_id', 'ASC')
-                  ->get();
+                  ->asString();
 
 /**
  * Complex ORDER BY nested
@@ -136,7 +125,7 @@ $stm     = $build->table('wp_users')
                     $builder->column('user_id', 'DESC');
                     $builder->column('user_id2', 'DESC');
                   })
-                  ->get();
+                  ->asString();
 
 /**
  * Simple GROUP BY
@@ -144,7 +133,7 @@ $stm     = $build->table('wp_users')
 $stm     = $build->table('wp_users')
                   ->select(array('*'))
                   ->group('user_id')
-                  ->get();
+                  ->asString();
 
 /**
  * Complex GROUP BY nested
@@ -155,5 +144,5 @@ $stm     = $build->table('wp_users')
                     $builder->column('user_id');
                     $builder->column('user_id2');
                   })
-                  ->get();
+                  ->asString();
 

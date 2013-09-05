@@ -6,11 +6,17 @@ use CentralinoFluentQueryBuilder\Builder\Mysql;
 
 class Select extends Mysql\Syntax implements Interfaces\Select
 {
+  private $_target;
   private $_columns = array();
+  private $_joins   = array();
+  private $_wheres  = array();
+  private $_limit;
+  private $_order;
+  private $_group;
 
   public function __construct($columns)
   {
-    parent::$_build['dms'] = $this;
+    $this->_target = static::$_targettable;
 
     if(is_array($columns))
     {
@@ -28,6 +34,68 @@ class Select extends Mysql\Syntax implements Interfaces\Select
   public function getColumns()
   {
     return $this->_columns;
+  }
+
+  public function getTarget()
+  {
+    return $this->_target;
+  }
+
+  public function getJoins()
+  {
+    return $this->_joins;
+  }
+
+  public function getWheres()
+  {
+    return $this->_wheres;
+  }
+
+  public function getLimit()
+  {
+    return $this->_limit;
+  }
+
+  public function getOrder()
+  {
+    return $this->_order;
+  }
+
+  public function getGroup()
+  {
+    return $this->_group;
+  }
+
+  public function from($table)
+  {
+    $this->_target = new Mysql\Target($table);
+
+    return $this;
+  }
+
+  protected function _addJoin($table, $join)
+  {
+    $this->_joins[$table][] = $join;
+  }
+
+  protected function _addWhere($where)
+  {
+    $this->_wheres[] = $where;
+  }
+
+  protected function _addLimit($limit)
+  {
+    $this->_limit = $limit;
+  }
+
+  protected function _addOrder($order)
+  {
+    $this->_order[] = $order;
+  }
+
+  protected function _addGroup($group)
+  {
+    $this->_group[] = $group;
   }
 
   public function columns(array $columns, $table = null)
